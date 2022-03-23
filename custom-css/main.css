@@ -17,6 +17,12 @@ main > .container {
     align-self: center;
 }
 
+.mainQuestionBody {
+    border-bottom: 2px solid gray;
+    margin: 20px;
+    padding: 10px;
+}
+
 .userPanel {
     margin: 0 5px;
     align-items: center;
@@ -53,13 +59,15 @@ main > .container {
     font-size: 150%;
 }
 
-.questionsHeader {
-
-}
-
 .reputationCounter {
     width: auto;
     font-size: 150%;
 }
 
+.answerBox {
+    margin: 20px;
+}
 
+.answerButton {
+    margin: 5px 0;
+}
