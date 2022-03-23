@@ -1,0 +1,89 @@
+main > .container {
+    padding: 60px 15px 0;
+}
+
+.questionBody {
+    border: 3px solid gray;
+    border-radius: 5px;
+    margin: 20px;
+    padding: 10px;
+}
+
+.questionAvatar {
+    width: 120px;
+    height: 120px;
+    margin: 10px;
+    border-radius: 40px;
+    align-self: center;
+}
+
+.mainQuestionBody {
+    border-bottom: 2px solid gray;
+    margin: 20px;
+    padding: 10px;
+}
+
+.userPanel {
+    margin: 0 5px;
+    align-items: center;
+    align-content: center;
+}
+
+.userPanel > a {
+    color: #ffffff;
+    align-self: center;
+}
+
+.userAvatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    margin: 1px;
+    align-self: center;
+}
+
+.buttonNavBar {
+    margin: 10px;
+}
+
+.rightColumn {
+    align-self: auto;
+    border-left: 5px black;
+}
+
+.popularTags > a {
+    font-size: 150%;
+}
+
+.bestMembers > div > a {
+    font-size: 150%;
+}
+
+.reputationCounter {
+    width: auto;
+    font-size: 150%;
+}
+
+.answerBox {
+    margin: 20px;
+}
+
+.newQuestionTitle {
+    margin: 20px;
+}
+
+.answerButton {
+    margin: 5px 0;
+}
+
+.answerTextArea {
+    resize: none;
+}
+
+.warningMessages{
+    color: #ff0000;
+}
+
+.logInRow > div{
+    margin: 25px 0;
+}
