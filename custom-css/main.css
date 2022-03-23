@@ -83,3 +83,7 @@ main > .container {
 .warningMessages{
     color: #ff0000;
 }
+
+.logInRow > div{
+    margin: 25px 0;
+}
