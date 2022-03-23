@@ -68,6 +68,18 @@ main > .container {
     margin: 20px;
 }
 
+.newQuestionTitle {
+    margin: 20px;
+}
+
 .answerButton {
     margin: 5px 0;
+}
+
+.answerTextArea {
+    resize: none;
+}
+
+.warningMessages{
+    color: #ff0000;
 }
