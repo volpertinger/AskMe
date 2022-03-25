@@ -1,0 +1,15 @@
+{% extends "include/base.html" %}
+{% block content %}
+    <h2 class="mt-5">New questions</h2>
+
+    {% include "include/questionInAnswer.html" %}
+
+    {% include "include/answer.html" %}
+
+    <div class="form-group answerBox">
+        <label for="Answer"></label><textarea class="form-control answerTextArea" id="Answer" rows="10"
+                                              placeholder="Enter your answer here..."></textarea>
+        <button type="submit" class="btn btn-outline-success mb-2 answerButton">Answer</button>
+    </div>
+
+{% endblock %}

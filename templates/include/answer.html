@@ -8,15 +8,15 @@
             <button class="btn btn-outline-dark"><i class="bi-hand-thumbs-up-fill"></i></button>
         </div>
         <div class="reputationCounter container-fluid">
-            <a>100</a>
+            <a>-1000</a>
         </div>
     </div>
     <div class="col-7">
-        <h3><a href="/questionAnswer/{{ question.number }}">{{ question.title }}</a></h3>
-        <p>{{ question.text }}</p>
-        <div>
-            <a href="#">Answers (3)</a>
-            <a>Tags </a><a href="#">Base </a><a href="#">Moon</a>
+        <p>{{ answer.text }}</p>
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="Correct 1">
+            <label class="form-check-label" for="Correct 1">Correct!</label>
         </div>
     </div>
+
 </div>

@@ -19,5 +19,9 @@ from baseApplication import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index)
+    path('', views.index),
+    path('addQuestion/', views.addQuestion),
+    path('login/', views.login),
+    path('registration/', views.registration),
+    path('questionAnswer/<int:i>', views.questionAnswer)
 ]
