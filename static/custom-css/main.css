@@ -94,3 +94,9 @@ main > .container {
 .correctBox {
     margin-top: 10px;
 }
+
+.paginationBlock {
+    border-top: 2px solid gray;
+    margin: 20px;
+    padding: 10px;
+}
