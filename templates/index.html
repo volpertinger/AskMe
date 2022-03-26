@@ -1,7 +1,8 @@
 {% extends "include/base.html" %}
 {% block content %}
     <h2 class="mt-5">New questions</h2>
-    {% for question in questions %}
+    {% for question in posts %}
         {% include "include/question.html" %}
     {% endfor %}
+    {% include "include/pagination.html" with page=posts %}
 {% endblock %}
