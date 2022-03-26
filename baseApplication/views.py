@@ -7,13 +7,15 @@ QUESTIONS = [
     {
         "title": f"Title {i}",
         "text": f"some text for question #{i}",
-        "number": f"{i}"
+        "number": f"{i}",
+        "reputation": f"{i * 123 + 32}"
     } for i in range(10)
 ]
 
 ANSWERS = [
     {
         "text": f"some text in answer #{i}",
+        "reputation": f"{i * 107 - 54}"
     } for i in range(10)
 ]
 

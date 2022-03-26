@@ -60,8 +60,11 @@ main > .container {
 }
 
 .reputationCounter {
-    width: auto;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
     font-size: 150%;
+    padding: 2px;
 }
 
 .answerBox {
@@ -80,10 +83,14 @@ main > .container {
     resize: none;
 }
 
-.warningMessages{
+.warningMessages {
     color: #ff0000;
 }
 
-.logInRow > div{
+.logInRow > div {
     margin: 25px 0;
+}
+
+.correctBox {
+    margin-top: 10px;
 }

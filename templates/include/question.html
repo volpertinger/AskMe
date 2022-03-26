@@ -3,13 +3,7 @@
     <div class="col-2">
         <img src="{% static "images/tmp_static/profile_icons/user_02.jpg" %}" alt="tmpUser_01"
              class="questionAvatar">
-        <div class="btn-group container-fluid ">
-            <button class="btn btn-outline-dark"><i class="bi-hand-thumbs-down-fill"></i></button>
-            <button class="btn btn-outline-dark"><i class="bi-hand-thumbs-up-fill"></i></button>
-        </div>
-        <div class="reputationCounter container-fluid">
-            <a>100</a>
-        </div>
+        {% include "include/reputation.html" with reputation=question.reputation %}
     </div>
     <div class="col-7">
         <h3><a href="/questionAnswer/{{ question.number }}">{{ question.title }}</a></h3>
