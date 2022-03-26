@@ -17,7 +17,7 @@ ANSWERS = [
     {
         "text": f"some text in answer #{i}",
         "reputation": f"{i * 107 - 54}"
-    } for i in range(10)
+    } for i in range(22)
 ]
 
 
