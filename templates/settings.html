@@ -1,0 +1,52 @@
+{% extends "include/base.html" %}
+{% block content %}
+    <h2 class="mt-5">Registration</h2>
+    <div class="row logInRow">
+        <p class="warningMessages">some warning messages</p>
+    </div>
+    <div class="row logInRow">
+        <div class="col-3 logInRow">
+            <h5>Login</h5>
+        </div>
+        <div class="col-7 form-group logInRow">
+            <input type="text" class="form-control" placeholder="dr_strangelove" id="Login">
+        </div>
+    </div>
+
+    <div class="row logInRow">
+        <div class="col-3 logInRow">
+            <h5>NickName</h5>
+        </div>
+        <div class="col-7 form-group logInRow">
+            <input type="text" class="form-control" placeholder="Dr. Strangelove" id="NickName">
+        </div>
+    </div>
+
+    <div class="row logInRow">
+        <div class="col-3 logInRow">
+            <h5>Email</h5>
+        </div>
+        <div class="col-7 form-group logInRow">
+            <input type="text" class="form-control" placeholder="example@gmail.com" id="Email">
+        </div>
+    </div>
+
+    <div class="row logInRow">
+        <div class="col-3 newQuestionTitle">
+            <h5>Upload avatar</h5>
+        </div>
+        <div class="col-7 form-group answerBox">
+            <input type="file" class="form-control" id="customFile"/>
+        </div>
+    </div>
+
+    <div class="row logInRow">
+        <div class="col-3 newQuestionTitle">
+            <h5></h5>
+        </div>
+        <div class="col-7 form-group answerBox">
+            <button type="submit" class="btn btn-outline-success mb-2 answerButton">Save</button>
+        </div>
+    </div>
+
+{% endblock %}

@@ -4,7 +4,10 @@
 
     {% include "include/questionInAnswer.html" %}
 
-    {% include "include/answer.html" %}
+    {% for answer in posts %}
+        {% include "include/answer.html" %}
+    {% endfor %}
+    {% include "include/pagination.html" with page=posts %}
 
     <div class="form-group answerBox">
         <label for="Answer"></label><textarea class="form-control answerTextArea" id="Answer" rows="10"
