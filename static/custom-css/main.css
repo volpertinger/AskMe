@@ -81,6 +81,7 @@ main > .container {
 
 .answerTextArea {
     resize: none;
+    max-width: 75ch;
 }
 
 .warningMessages {

@@ -10,7 +10,7 @@
     {% include "include/pagination.html" with page=posts %}
 
     <div class="form-group answerBox">
-        <label for="Answer"></label><textarea class="form-control answerTextArea" id="Answer" rows="10"
+        <label for="Answer"></label><textarea class="form-control answerTextArea" maxlength="1024" id="Answer" rows="10"
                                               placeholder="Enter your answer here..."></textarea>
         <button type="submit" class="btn btn-outline-success mb-2 answerButton">Answer</button>
     </div>
