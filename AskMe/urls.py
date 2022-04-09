@@ -24,5 +24,6 @@ urlpatterns = [
     path('login/', views.login),
     path('settings/', views.settings),
     path('registration/', views.registration),
-    path('questionAnswer/<int:i>', views.questionAnswer)
+    path('questionAnswer/<int:i>', views.questionAnswer),
+    path('questionsByTag/<str:tag>', views.questionsByTag)
 ]

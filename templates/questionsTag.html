@@ -1,0 +1,8 @@
+{% extends "include/base.html" %}
+{% block content %}
+    <h2 class="mt-5">Tag: {{ tag }}</h2>
+    {% for question in posts %}
+        {% include "include/question.html" %}
+    {% endfor %}
+    {% include "include/pagination.html" with page=posts %}
+{% endblock %}
