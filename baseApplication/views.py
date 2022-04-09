@@ -21,7 +21,7 @@ ANSWERS = [
 ]
 
 
-def index(request):
+def index(request, tag: str = ''):
     pageNumber = request.GET.get('page')
     paginator = Paginator(QUESTIONS, 5)
     try:
@@ -32,8 +32,9 @@ def index(request):
     except EmptyPage:
         # Если страница больше максимальной, доставить последнюю страницу результатов
         posts = paginator.page(paginator.num_pages)
-    return render(request, "index.html", {"questions": QUESTIONS, "isMember": True, "page": pageNumber,
-                                          "posts": posts})
+    return render(request, "questionsTag.html",
+                  {"questions": QUESTIONS, "isMember": True, "tag": tag, "page": pageNumber,
+                   "posts": posts})
 
 
 def addQuestion(request):
@@ -65,19 +66,3 @@ def questionAnswer(request, i: int):
         posts = paginator.page(paginator.num_pages)
     return render(request, "questionAnswer.html",
                   {"question": QUESTIONS[i], "answers": ANSWERS, "isMember": True, "page": pageNumber, "posts": posts})
-
-
-def questionsByTag(request, tag: str):
-    pageNumber = request.GET.get('page')
-    paginator = Paginator(QUESTIONS, 5)
-    try:
-        posts = paginator.page(pageNumber)
-    except PageNotAnInteger:
-        # Если страница не является целым числом, поставим первую страницу
-        posts = paginator.page(1)
-    except EmptyPage:
-        # Если страница больше максимальной, доставить последнюю страницу результатов
-        posts = paginator.page(paginator.num_pages)
-    return render(request, "questionsTag.html",
-                  {"questions": QUESTIONS, "isMember": True, "tag": tag, "page": pageNumber,
-                   "posts": posts})
