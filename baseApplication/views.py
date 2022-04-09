@@ -22,17 +22,17 @@ ANSWERS = [
 
 
 def index(request):
-    page = request.GET.get('page')
+    pageNumber = request.GET.get('page')
     paginator = Paginator(QUESTIONS, 5)
     try:
-        posts = paginator.page(page)
+        posts = paginator.page(pageNumber)
     except PageNotAnInteger:
         # Если страница не является целым числом, поставим первую страницу
         posts = paginator.page(1)
     except EmptyPage:
         # Если страница больше максимальной, доставить последнюю страницу результатов
         posts = paginator.page(paginator.num_pages)
-    return render(request, "index.html", {"questions": QUESTIONS, "isMember": True, "page": page,
+    return render(request, "index.html", {"questions": QUESTIONS, "isMember": True, "page": pageNumber,
                                           "posts": posts})
 
 
@@ -53,10 +53,10 @@ def settings(request):
 
 
 def questionAnswer(request, i: int):
-    page = request.GET.get('page')
+    pageNumber = request.GET.get('page')
     paginator = Paginator(ANSWERS, 5)
     try:
-        posts = paginator.page(page)
+        posts = paginator.page(pageNumber)
     except PageNotAnInteger:
         # Если страница не является целым числом, поставим первую страницу
         posts = paginator.page(1)
@@ -64,19 +64,20 @@ def questionAnswer(request, i: int):
         # Если страница больше максимальной, доставить последнюю страницу результатов
         posts = paginator.page(paginator.num_pages)
     return render(request, "questionAnswer.html",
-                  {"question": QUESTIONS[i], "answers": ANSWERS, "isMember": True, "page": page, "posts": posts})
+                  {"question": QUESTIONS[i], "answers": ANSWERS, "isMember": True, "page": pageNumber, "posts": posts})
 
 
 def questionsByTag(request, tag: str):
-    page = request.GET.get('page')
+    pageNumber = request.GET.get('page')
     paginator = Paginator(QUESTIONS, 5)
     try:
-        posts = paginator.page(page)
+        posts = paginator.page(pageNumber)
     except PageNotAnInteger:
         # Если страница не является целым числом, поставим первую страницу
         posts = paginator.page(1)
     except EmptyPage:
         # Если страница больше максимальной, доставить последнюю страницу результатов
         posts = paginator.page(paginator.num_pages)
-    return render(request, "questionsTag.html", {"questions": QUESTIONS, "isMember": True, "tag": tag, "page": page,
-                                                 "posts": posts})
+    return render(request, "questionsTag.html",
+                  {"questions": QUESTIONS, "isMember": True, "tag": tag, "page": pageNumber,
+                   "posts": posts})
