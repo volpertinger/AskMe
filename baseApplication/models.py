@@ -7,7 +7,7 @@ class Reputation(models.Model):
 
 
 class Profile(User):
-    profile_image = models.ImageField()
+    profile_image = models.ImageField(null=True, blank=True)
 
 
 class Question(models.Model):
@@ -26,4 +26,4 @@ class Answer(models.Model):
 
 class Tag(models.Model):
     tag = models.CharField(max_length=32)
-    questions = models.ManyToManyField(Question)
+    questions = models.ManyToManyField(Question, blank=True)
