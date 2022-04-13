@@ -57,18 +57,19 @@ class TagManager(models.Manager):
         return self.get_queryset().popular()
 
 
-class Reputation(models.Model):
-    value = models.IntegerField
-
-    def __str__(self):
-        return str(self.value)
-
-
 class Profile(User):
     profile_image = models.ImageField(null=True, blank=True)
 
     def __str__(self):
         return str(self.username)
+
+
+class Reputation(models.Model):
+    value = models.IntegerField
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.value)
 
 
 class Question(models.Model):
