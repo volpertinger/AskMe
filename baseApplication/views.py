@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from baseApplication.models import Profile, Reputation, Question, Answer, Tag
+from django.http import Http404
 
 
 def index(request, tag: str = '', sort: str = ''):
@@ -13,6 +14,8 @@ def index(request, tag: str = '', sort: str = ''):
         questions = Question.manager.get_latest()
     if tag != '':
         questions = Question.manager.get_by_tag_title(tag)
+        if len(questions) <= 0:
+            raise Http404("Tag does not exist")
     page_number = request.GET.get('page')
     paginator = Paginator(questions, 5)
     try:
@@ -52,7 +55,7 @@ def questionAnswer(request, id_question: int):
     popular_tags = Tag.manager.get_popular()
     question = Question.manager.all().filter(id=id_question)
     if len(question) <= 0:
-        return render(request, "404.html")
+        raise Http404("Question does not exist")
     question = question[0]
     answers = Answer.manager.get_popular(question)
     page_number = request.GET.get('page')
