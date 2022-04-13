@@ -10,7 +10,10 @@
         <p>{{ question.text }}</p>
         <div>
             <a href="#">Answers (3)</a>
-            <a>Tags </a><a href="#">Base </a><a href="#">Moon</a>
+            <a>Tags </a>
+            {% for tag in question.get_tags %}
+                <a href="/questionsByTag/{{ tag }}">{{ tag }} </a>
+            {% endfor %}
         </div>
     </div>
 </div>

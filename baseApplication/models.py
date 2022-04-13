@@ -66,6 +66,9 @@ class TagManager(models.Manager):
     def get_popular(self):
         return self.get_queryset().popular()
 
+    def get_questions(self, question):
+        return self.get_queryset().filter(questions=question)
+
 
 # Models
 
@@ -93,8 +96,8 @@ class Question(models.Model):
 
     manager = QuestionManager()
 
-    def getHighReputation(self, number):
-        return self.objects.all().order_by("reputation")[:number]
+    def get_tags(self):
+        return Tag.manager.get_questions(self)
 
     def __str__(self):
         return self.title
