@@ -4,9 +4,13 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from baseApplication.models import Profile, Reputation, Question, Answer, Tag
 
 
-def index(request, tag: str = ''):
+def index(request, tag: str = '', sort: str = ''):
+    header = "popular questions"
     popular_tags = Tag.manager.get_popular()
     questions = Question.manager.get_popular()
+    if sort == "latest":
+        header = "latest questions"
+        questions = Question.manager.get_latest()
     if tag != '':
         questions = Question.manager.get_by_tag_title(tag)
     page_number = request.GET.get('page')
@@ -21,7 +25,7 @@ def index(request, tag: str = ''):
         posts = paginator.page(paginator.num_pages)
     return render(request, "questionsTag.html",
                   {"questions": questions, "isMember": True, "tag": tag, "page": page_number,
-                   "posts": posts, "tags": popular_tags})
+                   "posts": posts, "tags": popular_tags, "header": header})
 
 
 def addQuestion(request):

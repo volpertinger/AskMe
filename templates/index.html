@@ -1,6 +1,6 @@
 {% extends "include/base.html" %}
 {% block content %}
-    <h2 class="mt-5">New questions</h2>
+    <h2 class="mt-5">{{ header }}</h2>
     {% for question in posts %}
         {% include "include/question.html" %}
     {% endfor %}

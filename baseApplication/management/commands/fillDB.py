@@ -25,7 +25,10 @@ def addUser(number):
 
 
 def addTag(number):
-    Tag(tag="Tag_" + str(number)).save()
+    questions = Question.manager.all()[number % QUESTION_COUNT]
+    title = "Tag_" + str(number)
+    tag = Tag(tag=title).save()
+    # questions.tag_set(tag)
 
 
 def addAnswer(number):
@@ -65,8 +68,6 @@ def addReputation(number):
 
 
 def addAllTables():
-    for i in range(TAGS_COUNT):
-        addTag(i)
     for i in range(REPUTATION_COUNT):
         addReputation(i)
     for i in range(USERS_COUNT):
@@ -75,6 +76,8 @@ def addAllTables():
         addQuestion(i)
     for i in range(ANSWERS_COUNT):
         addAnswer(i)
+    for i in range(TAGS_COUNT):
+        addTag(i)
 
 
 class Command(BaseCommand):

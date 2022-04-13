@@ -3,7 +3,7 @@
     {% if tag != "" %}
         <h2 class="mt-5">Tag: {{ tag }}</h2>
     {% else %}
-        <h2 class="mt-5">New questions</h2>
+        <h2 class="mt-5">{{ header }}</h2>
     {% endif %}
     {% for question in posts %}
         {% include "include/question.html" %}
