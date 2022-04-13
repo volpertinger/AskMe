@@ -25,10 +25,11 @@ def addUser(number):
 
 
 def addTag(number):
-    questions = Question.manager.all()[number % QUESTION_COUNT]
+    question = Question.manager.all()[number % QUESTION_COUNT]
     title = "Tag_" + str(number)
-    tag = Tag(tag=title).save()
-    # questions.tag_set(tag)
+    Tag(tag=title).save()
+    tag = Tag.manager.filter(tag=title)[0]
+    tag.questions.add(question)
 
 
 def addAnswer(number):
