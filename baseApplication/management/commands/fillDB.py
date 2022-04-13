@@ -10,7 +10,7 @@ def clearDB():
 
 
 def addTag(number):
-    Tag(tag="Tag#" + str(number)).save()
+    tag = Tag(tag="Tag#" + str(number)).save()
 
 
 def addAnswer(number):
@@ -20,7 +20,7 @@ def addAnswer(number):
 
 def addReputation(number):
     reputation_value = 100 * number
-    Reputation(value=reputation_value).save()
+    reputation = Reputation(value=reputation_value).save()
 
 
 def addAllTables(number):
