@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 class QuestionQuerySet(models.QuerySet):
     def popular(self):
-        return self.order_by("reputation__value")
+        return self.order_by("-reputation__value")
 
     def latest(self):
         return self.order_by("publish_date")
@@ -14,7 +14,7 @@ class QuestionQuerySet(models.QuerySet):
 
 class QuestionManager(models.Manager):
     def get_queryset(self):
-        return QuestionQuerySet(self.model, using=self.db)
+        return QuestionQuerySet(self.model)
 
     def get_popular(self):
         return self.get_queryset().popular()
@@ -56,6 +56,8 @@ class TagManager(models.Manager):
     def get_popular(self):
         return self.get_queryset().popular()
 
+
+# Models
 
 class Profile(User):
     profile_image = models.ImageField(null=True, blank=True)

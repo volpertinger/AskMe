@@ -1,29 +1,14 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-# Create your views here.
-
-QUESTIONS = [
-    {
-        "title": f"Title {i}",
-        "text": f"some text for question #{i}",
-        "number": f"{i}",
-        "reputation": f"{i * 123 + 32}"
-    } for i in range(22)
-]
-
-ANSWERS = [
-    {
-        "text": f"some text in answer #{i}",
-        "reputation": f"{i * 107 - 54}"
-    } for i in range(22)
-]
+from baseApplication.models import Profile, Reputation, Question, Answer, Tag
 
 
 def index(request, tag: str = ''):
+    questions = Question.objects.order_by("-reputation__value")
+    # questions = Question.manager.all()
     page_number = request.GET.get('page')
-    paginator = Paginator(QUESTIONS, 5)
+    paginator = Paginator(questions, 5)
     try:
         posts = paginator.page(page_number)
     except PageNotAnInteger:
@@ -33,7 +18,7 @@ def index(request, tag: str = ''):
         # Если страница больше максимальной, доставить последнюю страницу результатов
         posts = paginator.page(paginator.num_pages)
     return render(request, "questionsTag.html",
-                  {"questions": QUESTIONS, "isMember": True, "tag": tag, "page": page_number,
+                  {"questions": questions, "isMember": True, "tag": tag, "page": page_number,
                    "posts": posts})
 
 
@@ -53,9 +38,16 @@ def settings(request):
     return render(request, "settings.html", {"isMember": True})
 
 
-def questionAnswer(request, i: int):
+def questionAnswer(request, id_question: int):
+    # answers = ANSWERS
+    question = Question.objects.filter(id=id_question)
+    if len(question) <= 0:
+        return
+        # обработка 404
+    question = question[0]
+    answers = Answer.objects.filter(question=question)
     page_number = request.GET.get('page')
-    paginator = Paginator(ANSWERS, 5)
+    paginator = Paginator(answers, 5)
     try:
         posts = paginator.page(page_number)
     except PageNotAnInteger:
@@ -65,4 +57,4 @@ def questionAnswer(request, i: int):
         # Если страница больше максимальной, доставить последнюю страницу результатов
         posts = paginator.page(paginator.num_pages)
     return render(request, "questionAnswer.html",
-                  {"question": QUESTIONS[i], "answers": ANSWERS, "isMember": True, "page": page_number, "posts": posts})
+                  {"question": question, "answers": answers, "isMember": True, "page": page_number, "posts": posts})

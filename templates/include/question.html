@@ -6,7 +6,7 @@
         {% include "include/reputation.html" with reputation=question.reputation %}
     </div>
     <div class="col-7">
-        <h3><a href="/questionAnswer/{{ question.number }}">{{ question.title }}</a></h3>
+        <h3><a href="/questionAnswer/{{ question.id }}">{{ question.title }}</a></h3>
         <p>{{ question.text }}</p>
         <div>
             <a href="#">Answers (3)</a>
