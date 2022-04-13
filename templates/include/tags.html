@@ -1,7 +1,7 @@
 {% load static %}
-<div id="popular tags" class="popularTags">
+<div id="popular tags">
     <h2 class="mt-5"> Popular Tags</h2>
     {% for tag in tags %}
-        <a href="/questionsByTag/{{ tag }}">{{ tag }}</a>
+        <div class="popularTags"><a href="/questionsByTag/{{ tag }}">{{ tag }}</a></div>
     {% endfor %}
 </div>
