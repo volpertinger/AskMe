@@ -66,7 +66,7 @@ class Profile(User):
 
 class Reputation(models.Model):
     value = models.IntegerField
-    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    authors = models.ManyToManyField(Profile, blank=True)
 
     def __str__(self):
         return str(self.value)
@@ -92,7 +92,7 @@ class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     text = models.TextField(max_length=8192)
     reputation = models.ForeignKey(Reputation, on_delete=models.CASCADE)
-    isCorrect = models.BooleanField()
+    isCorrect = models.BooleanField(default=False)
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     publish_date = models.DateField(default=datetime.date.today)
 
