@@ -5,6 +5,20 @@ from baseApplication.models import Profile, Reputation, Question, Answer, Tag
 from django.http import Http404
 
 
+def get_posts(request, array):
+    page_number = request.GET.get('page')
+    paginator = Paginator(array, 5)
+    try:
+        posts = paginator.page(page_number)
+    except PageNotAnInteger:
+        # Если страница не является целым числом, поставим первую страницу
+        posts = paginator.page(1)
+    except EmptyPage:
+        # Если страница больше максимальной, доставить последнюю страницу результатов
+        posts = paginator.page(paginator.num_pages)
+    return posts, page_number
+
+
 def index(request, tag: str = '', sort: str = ''):
     header = "popular questions"
     popular_tags = Tag.manager.get_popular()
@@ -16,16 +30,7 @@ def index(request, tag: str = '', sort: str = ''):
         questions = Question.manager.get_by_tag_title(tag)
         if len(questions) <= 0:
             raise Http404("Tag does not exist")
-    page_number = request.GET.get('page')
-    paginator = Paginator(questions, 5)
-    try:
-        posts = paginator.page(page_number)
-    except PageNotAnInteger:
-        # Если страница не является целым числом, поставим первую страницу
-        posts = paginator.page(1)
-    except EmptyPage:
-        # Если страница больше максимальной, доставить последнюю страницу результатов
-        posts = paginator.page(paginator.num_pages)
+    posts, page_number = get_posts(request, questions)
     return render(request, "index.html",
                   {"questions": questions, "isMember": True, "tag": tag, "page": page_number,
                    "posts": posts, "tags": popular_tags, "header": header})
@@ -58,16 +63,7 @@ def questionAnswer(request, id_question: int):
         raise Http404("Question does not exist")
     question = question[0]
     answers = Answer.manager.get_popular(question)
-    page_number = request.GET.get('page')
-    paginator = Paginator(answers, 5)
-    try:
-        posts = paginator.page(page_number)
-    except PageNotAnInteger:
-        # Если страница не является целым числом, поставим первую страницу
-        posts = paginator.page(1)
-    except EmptyPage:
-        # Если страница больше максимальной, доставить последнюю страницу результатов
-        posts = paginator.page(paginator.num_pages)
+    posts, page_number = get_posts(request, answers)
     return render(request, "questionAnswer.html",
                   {"question": question, "answers": answers, "isMember": True, "page": page_number, "posts": posts,
                    "tags": popular_tags})
