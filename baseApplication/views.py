@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from baseApplication.models import Profile, Reputation, Question, Answer, Tag
+from baseApplication.models import Profile, Like, Dislike, Question, Answer, Tag
 from django.http import Http404
 
 

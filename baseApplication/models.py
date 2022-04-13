@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 class QuestionQuerySet(models.QuerySet):
     def popular(self):
-        return self.order_by("-reputation__value")
+        return self.order_by("-reputation")
 
     def latest(self):
         return self.order_by("publish_date")
@@ -27,10 +27,15 @@ class QuestionManager(models.Manager):
             return self.get_queryset().latest()
         return self.get_queryset().filter(tag=tag)
 
+    def get_reputation(self):
+        likes = int(self.get_queryset().get(id=self.id).like)
+        dislikes = int(self.get_queryset().get(id=self.id).dislike)
+        return likes - dislikes
+
 
 class AnswerQuerySet(models.QuerySet):
     def popular(self):
-        return self.order_by("reputation__value")
+        return self.order_by("-reputation")
 
     def latest(self):
         return self.order_by("publish_date")
@@ -47,6 +52,11 @@ class AnswerManager(models.Manager):
 
     def get_latest(self, question_search=None):
         return self.get_queryset(question_search).latest()
+
+    def get_reputation(self):
+        likes = int(self.get_queryset().get(id=self.id).like)
+        dislikes = int(self.get_queryset().get(id=self.id).dislike.authors)
+        return likes - dislikes
 
 
 class TagQuerySet(models.QuerySet):
@@ -83,21 +93,28 @@ class Profile(User):
         return str(self.username)
 
 
-class Reputation(models.Model):
-    value = models.IntegerField()
-    authors_likes = models.ManyToManyField(Profile, blank=True)
-    authors_dislikes = models.ManyToManyField(Profile, blank=True)
+class Like(models.Model):
+    authors = models.ManyToManyField(Profile, blank=True)
 
-    def __str__(self):
-        return str(self.value)
+    def __int__(self):
+        return self.authors.all().count()
+
+
+class Dislike(models.Model):
+    authors = models.ManyToManyField(Profile, blank=True)
+
+    def __int__(self):
+        return self.authors.all().count()
 
 
 class Question(models.Model):
     title = models.CharField(max_length=256)
     text = models.TextField(max_length=8192)
-    reputation = models.ForeignKey(Reputation, on_delete=models.CASCADE)
+    like = models.ForeignKey(Like, on_delete=models.CASCADE)
+    dislike = models.ForeignKey(Dislike, on_delete=models.CASCADE)
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     publish_date = models.DateField(default=datetime.date.today)
+    reputation = models.IntegerField()
 
     manager = QuestionManager()
 
@@ -107,6 +124,9 @@ class Question(models.Model):
     def get_count_answers(self):
         return Answer.manager.get_queryset(self).count()
 
+    def get_reputation(self):
+        return self.manager.get_reputation()
+
     def __str__(self):
         return self.title
 
@@ -114,12 +134,17 @@ class Question(models.Model):
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     text = models.TextField(max_length=8192)
-    reputation = models.ForeignKey(Reputation, on_delete=models.CASCADE)
+    like = models.ForeignKey(Like, on_delete=models.CASCADE)
+    dislike = models.ForeignKey(Dislike, on_delete=models.CASCADE)
     isCorrect = models.BooleanField(default=False)
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     publish_date = models.DateField(default=datetime.date.today)
+    reputation = models.IntegerField()
 
     manager = AnswerManager()
+
+    def get_reputation(self):
+        return self.manager.get_reputation()
 
     def __str__(self):
         return str(self.author) + "/" + str(self.question.title)

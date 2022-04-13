@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from baseApplication.models import Profile, Reputation, Question, Answer, Tag
+from baseApplication.models import Profile, Like, Dislike, Question, Answer, Tag
 
 USERS_COUNT = 10  # 10 000
 QUESTION_COUNT = 100  # 100 000
@@ -11,8 +11,9 @@ REPUTATION_COUNT = 2000  # 2 000 000
 def clearDB():
     Tag.manager.all().delete()
     Answer.manager.all().delete()
+    Like.objects.all().delete()
+    Dislike.objects.all().delete()
     Question.manager.all().delete()
-    Reputation.objects.all().delete()
     # чтобы мою админку оно не чистило каждый раз
     Profile.objects.all().exclude(username="killoboker").delete()
 
@@ -40,9 +41,11 @@ def addAnswer(number):
            'fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt ' \
            'mollit anim id est laborum. ' + str(number)
     question = Question.manager.all()[number % QUESTION_COUNT]
-    reputation = Reputation.objects.all()[number % REPUTATION_COUNT]
+    like = Like.objects.all()[number % REPUTATION_COUNT]
+    dislike = Dislike.objects.all()[number % REPUTATION_COUNT]
     author = Profile.objects.all()[number % USERS_COUNT]
-    Answer(text=text, question=question, reputation=reputation, author=author).save()
+    reputation = int(like) - int(dislike)
+    Answer(text=text, question=question, like=like, dislike=dislike, reputation=reputation, author=author).save()
 
 
 def addQuestion(number):
@@ -59,21 +62,30 @@ def addQuestion(number):
            "publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search " \
            "for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over " \
            "the years, sometimes by accident, sometimes on purpose (injected humour and the like). #" + str(number)
-    reputation = Reputation.objects.all()[number % REPUTATION_COUNT]
+    like = Like.objects.all()[number % REPUTATION_COUNT]
+    dislike = Dislike.objects.all()[number % REPUTATION_COUNT]
     author = Profile.objects.all()[number % USERS_COUNT]
-    Question(title=title, text=text, reputation=reputation, author=author).save()
+    reputation = int(like) - int(dislike)
+    Question(title=title, text=text, like=like, dislike=dislike, reputation=reputation, author=author).save()
 
 
 def addReputation(number):
-    reputation_value = 100 * number % 100000
-    Reputation(value=reputation_value).save()
+    like = Like()
+    like.save()
+    dislike = Dislike()
+    dislike.save()
+    for i in range(1, USERS_COUNT):
+        author = Profile.objects.all()[i]
+        like.authors.add(author)
+    author = Profile.objects.all()[0]
+    dislike.authors.add(author)
 
 
 def addAllTables():
-    for i in range(REPUTATION_COUNT):
-        addReputation(i)
     for i in range(USERS_COUNT):
         addUser(i)
+    for i in range(REPUTATION_COUNT):
+        addReputation(i)
     for i in range(QUESTION_COUNT):
         addQuestion(i)
     for i in range(ANSWERS_COUNT):
