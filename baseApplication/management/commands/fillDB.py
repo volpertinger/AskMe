@@ -2,10 +2,10 @@ from django.core.management.base import BaseCommand
 from baseApplication.models import Profile, Reputation, Question, Answer, Tag
 
 USERS_COUNT = 10  # 10 000
-QUESTION_COUNT = 10  # 100 000
-ANSWERS_COUNT = 10  # 1 000 000
+QUESTION_COUNT = 100  # 100 000
+ANSWERS_COUNT = 1000  # 1 000 000
 TAGS_COUNT = 10  # 10 000
-REPUTATION_COUNT = 10  # 2 000 000
+REPUTATION_COUNT = 2000  # 2 000 000
 
 
 def clearDB():
@@ -25,11 +25,12 @@ def addUser(number):
 
 
 def addTag(number):
-    question = Question.manager.all()[number % QUESTION_COUNT]
     title = "Tag_" + str(number)
     Tag(tag=title).save()
     tag = Tag.manager.filter(tag=title)[0]
-    tag.questions.add(question)
+    for i in range(QUESTION_COUNT // 10):
+        question = Question.manager.all()[(number + i) % QUESTION_COUNT]
+        tag.questions.add(question)
 
 
 def addAnswer(number):
