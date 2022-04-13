@@ -9,7 +9,7 @@
         <h3><a href="/questionAnswer/{{ question.id }}">{{ question.title }}</a></h3>
         <p>{{ question.text }}</p>
         <div>
-            <a href="#">Answers (3)</a>
+            <a href="/questionAnswer/{{ question.id }}">Answers {{ question.get_count_answers }}</a>
             <a>Tags </a>
             {% for tag in question.get_tags %}
                 <a href="/questionsByTag/{{ tag }}">{{ tag }} </a>

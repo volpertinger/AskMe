@@ -99,6 +99,9 @@ class Question(models.Model):
     def get_tags(self):
         return Tag.manager.get_questions(self)
 
+    def get_count_answers(self):
+        return Answer.manager.get_queryset(self).count()
+
     def __str__(self):
         return self.title
 
