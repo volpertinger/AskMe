@@ -38,12 +38,12 @@ def settings(request):
 
 
 def questionAnswer(request, id_question: int):
-    question = Question.objects.filter(id=id_question)
+    question = Question.manager.all().filter(id=id_question)
     if len(question) <= 0:
         return
         # обработка 404
     question = question[0]
-    answers = Answer.objects.filter(question=question)
+    answers = Answer.manager.get_popular(question)
     page_number = request.GET.get('page')
     paginator = Paginator(answers, 5)
     try:

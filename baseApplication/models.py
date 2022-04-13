@@ -40,7 +40,7 @@ class AnswerManager(models.Manager):
     def get_queryset(self, question_search=None):
         if question_search is None:
             return QuestionQuerySet(self.model, using=self.db)
-        return QuestionQuerySet(self.model, using=self.db).filter(question=question_search)
+        return QuestionQuerySet(self.model, using=self.db).filter(question__id=question_search.id)
 
     def get_popular(self, question_search=None):
         return self.get_queryset(question_search).popular()
