@@ -97,7 +97,7 @@ class Answer(models.Model):
     publish_date = models.DateField(default=datetime.date.today)
 
     def __str__(self):
-        return str(self.author)
+        return str(self.author) + "/" + str(self.question.title)
 
 
 class Tag(models.Model):
