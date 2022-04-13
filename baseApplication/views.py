@@ -27,7 +27,8 @@ def index(request, tag: str = '', sort: str = ''):
         header = "latest questions"
         questions = Question.manager.get_latest()
     if tag != '':
-        questions = Question.manager.get_by_tag_title(tag)
+        tag = Tag.manager.get_tag_by_title(tag)
+        questions = Question.manager.get_by_tag(tag)
         if len(questions) <= 0:
             raise Http404("Tag does not exist")
     posts, page_number = get_posts(request, questions)

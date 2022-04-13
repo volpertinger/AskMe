@@ -26,10 +26,10 @@ def addUser(number):
 
 def addTag(number):
     title = "Tag_" + str(number)
-    Tag(tag=title).save()
-    tag = Tag.manager.filter(tag=title)[0]
+    Tag(title=title).save()
+    tag = Tag.manager.filter(title=title)[0]
     for i in range(QUESTION_COUNT // 10):
-        question = Question.manager.all()[(number + i) % QUESTION_COUNT]
+        question = Question.manager.all()[(number * i) % QUESTION_COUNT]
         tag.questions.add(question)
 
 
@@ -38,7 +38,7 @@ def addAnswer(number):
            'dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ' \
            'ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu ' \
            'fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt ' \
-           'mollit anim id est laborum. '
+           'mollit anim id est laborum. ' + str(number)
     question = Question.manager.all()[number % QUESTION_COUNT]
     reputation = Reputation.objects.all()[number % REPUTATION_COUNT]
     author = Profile.objects.all()[number % USERS_COUNT]

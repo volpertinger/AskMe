@@ -22,15 +22,10 @@ class QuestionManager(models.Manager):
     def get_latest(self):
         return self.get_queryset().latest()
 
-    def get_by_tag_title(self, tag_title=None):
-        if tag_title is None:
+    def get_by_tag(self, tag=None):
+        if tag is None:
             return self.get_queryset().latest()
-        return self.get_queryset().filter(tag__tag=tag_title)
-
-
-class QuestionPopularManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().order_by("-reputation__value")
+        return self.get_queryset().filter(tag=tag)
 
 
 class AnswerQuerySet(models.QuerySet):
@@ -56,7 +51,13 @@ class AnswerManager(models.Manager):
 
 class TagQuerySet(models.QuerySet):
     def popular(self):
-        return self.annotate(num_questions=models.Count("questions")).order_by("num_questions")
+        return self.annotate(num_questions=models.Count("questions")).order_by("-num_questions")
+
+    def questions(self, question):
+        return self.filter(questions=question)
+
+    def get_by_title(self, title):
+        return self.filter(title=title)[0]
 
 
 class TagManager(models.Manager):
@@ -67,7 +68,10 @@ class TagManager(models.Manager):
         return self.get_queryset().popular()
 
     def get_questions(self, question):
-        return self.get_queryset().filter(questions=question)
+        return self.get_queryset().questions(question)
+
+    def get_tag_by_title(self, title):
+        return self.get_queryset().get_by_title(title)
 
 
 # Models
@@ -121,11 +125,14 @@ class Answer(models.Model):
 
 
 class Tag(models.Model):
-    tag = models.CharField(max_length=32)
+    title = models.CharField(max_length=32)
     questions = models.ManyToManyField(Question, blank=True)
     last_update = models.DateField(auto_now=True)
 
     manager = TagManager()
 
+    def get_count_questions(self):
+        return Question.manager.get_by_tag(self).count()
+
     def __str__(self):
-        return self.tag
+        return self.title
