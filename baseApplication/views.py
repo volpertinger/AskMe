@@ -26,7 +26,7 @@ def index(request, tag: str = '', sort: str = ''):
     except EmptyPage:
         # Если страница больше максимальной, доставить последнюю страницу результатов
         posts = paginator.page(paginator.num_pages)
-    return render(request, "questionsTag.html",
+    return render(request, "index.html",
                   {"questions": questions, "isMember": True, "tag": tag, "page": page_number,
                    "posts": posts, "tags": popular_tags, "header": header})
 

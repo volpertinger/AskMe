@@ -1,6 +1,12 @@
 {% extends "include/base.html" %}
 {% block content %}
-    <h2 class="mt-5">{{ header }}</h2>
+    {% if tag != "" %}
+        <h2 class="mt-5">Tag: {{ tag }}</h2>
+    {% else %}
+        <h2 class="mt-5">{{ header }}</h2>
+    {% endif %}
+    <a href="/questionsSort/latest" class="btn btn-info buttonNavBar" role="button">latest</a>
+    <a href="/" class="btn btn-info buttonNavBar" role="button">popular</a>
     {% for question in posts %}
         {% include "include/question.html" %}
     {% endfor %}

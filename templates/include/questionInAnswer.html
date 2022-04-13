@@ -9,7 +9,10 @@
         <h3><p>{{ question.title }}</p></h3>
         <p>{{ question.text }}</p>
         <div>
-            <a>Tags </a><a href="#">Base </a><a href="#">Moon</a>
+            <a>Tags </a>
+            {% for tag in question.get_tags %}
+                <a href="/questionsByTag/{{ tag }}">{{ tag }} </a>
+            {% endfor %}
         </div>
     </div>
 </div>
