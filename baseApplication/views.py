@@ -5,7 +5,10 @@ from baseApplication.models import Profile, Reputation, Question, Answer, Tag
 
 
 def index(request, tag: str = ''):
+    popular_tags = Tag.manager.get_popular()
     questions = Question.manager.get_popular()
+    if tag != '':
+        questions = Question.manager.get_by_tag_title(tag)
     page_number = request.GET.get('page')
     paginator = Paginator(questions, 5)
     try:
@@ -18,30 +21,34 @@ def index(request, tag: str = ''):
         posts = paginator.page(paginator.num_pages)
     return render(request, "questionsTag.html",
                   {"questions": questions, "isMember": True, "tag": tag, "page": page_number,
-                   "posts": posts})
+                   "posts": posts, "tags": popular_tags})
 
 
 def addQuestion(request):
-    return render(request, "addQuestion.html", {"isMember": True})
+    popular_tags = Tag.manager.get_popular()
+    return render(request, "addQuestion.html", {"isMember": True, "tags": popular_tags})
 
 
 def login(request):
-    return render(request, "login.html", {"isMember": False})
+    popular_tags = Tag.manager.get_popular()
+    return render(request, "login.html", {"isMember": False, "tags": popular_tags})
 
 
 def registration(request):
-    return render(request, "registration.html", {"isMember": False})
+    popular_tags = Tag.manager.get_popular()
+    return render(request, "registration.html", {"isMember": False, "tags": popular_tags})
 
 
 def settings(request):
-    return render(request, "settings.html", {"isMember": True})
+    popular_tags = Tag.manager.get_popular()
+    return render(request, "settings.html", {"isMember": True, "tags": popular_tags})
 
 
 def questionAnswer(request, id_question: int):
+    popular_tags = Tag.manager.get_popular()
     question = Question.manager.all().filter(id=id_question)
     if len(question) <= 0:
-        return
-        # обработка 404
+        return render(request, "404.html")
     question = question[0]
     answers = Answer.manager.get_popular(question)
     page_number = request.GET.get('page')
@@ -55,4 +62,5 @@ def questionAnswer(request, id_question: int):
         # Если страница больше максимальной, доставить последнюю страницу результатов
         posts = paginator.page(paginator.num_pages)
     return render(request, "questionAnswer.html",
-                  {"question": question, "answers": answers, "isMember": True, "page": page_number, "posts": posts})
+                  {"question": question, "answers": answers, "isMember": True, "page": page_number, "posts": posts,
+                   "tags": popular_tags})

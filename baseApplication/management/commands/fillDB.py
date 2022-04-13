@@ -9,9 +9,9 @@ REPUTATION_COUNT = 10  # 2 000 000
 
 
 def clearDB():
-    Tag.objects.all().delete()
-    Answer.objects.all().delete()
-    Question.objects.all().delete()
+    Tag.manager.all().delete()
+    Answer.manager.all().delete()
+    Question.manager.all().delete()
     Reputation.objects.all().delete()
     # чтобы мою админку оно не чистило каждый раз
     Profile.objects.all().exclude(username="killoboker").delete()
@@ -25,7 +25,7 @@ def addUser(number):
 
 
 def addTag(number):
-    Tag(tag="Tag#" + str(number)).save()
+    Tag(tag="Tag_" + str(number)).save()
 
 
 def addAnswer(number):
@@ -34,7 +34,7 @@ def addAnswer(number):
            'ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu ' \
            'fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt ' \
            'mollit anim id est laborum. '
-    question = Question.objects.all()[number % QUESTION_COUNT]
+    question = Question.manager.all()[number % QUESTION_COUNT]
     reputation = Reputation.objects.all()[number % REPUTATION_COUNT]
     author = Profile.objects.all()[number % USERS_COUNT]
     Answer(text=text, question=question, reputation=reputation, author=author).save()

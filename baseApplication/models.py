@@ -22,6 +22,11 @@ class QuestionManager(models.Manager):
     def get_latest(self):
         return self.get_queryset().latest()
 
+    def get_by_tag_title(self, tag_title=None):
+        if tag_title is None:
+            return self.get_queryset().latest()
+        return self.get_queryset().filter(tag__tag=tag_title)
+
 
 class QuestionPopularManager(models.Manager):
     def get_queryset(self):
