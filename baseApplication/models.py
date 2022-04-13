@@ -23,6 +23,11 @@ class QuestionManager(models.Manager):
         return self.get_queryset().latest()
 
 
+class QuestionPopularManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().order_by("-reputation__value")
+
+
 class AnswerQuerySet(models.QuerySet):
     def popular(self):
         return self.order_by("reputation__value")
@@ -81,7 +86,7 @@ class Question(models.Model):
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     publish_date = models.DateField(default=datetime.date.today)
 
-    manager = QuestionManager
+    manager = QuestionManager()
 
     def getHighReputation(self, number):
         return self.objects.all().order_by("reputation")[:number]
@@ -98,6 +103,8 @@ class Answer(models.Model):
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     publish_date = models.DateField(default=datetime.date.today)
 
+    manager = AnswerManager()
+
     def __str__(self):
         return str(self.author) + "/" + str(self.question.title)
 
@@ -107,7 +114,7 @@ class Tag(models.Model):
     questions = models.ManyToManyField(Question, blank=True)
     last_update = models.DateField(auto_now=True)
 
-    manager = TagManager
+    manager = TagManager()
 
     def __str__(self):
         return self.tag

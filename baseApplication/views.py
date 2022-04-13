@@ -5,8 +5,7 @@ from baseApplication.models import Profile, Reputation, Question, Answer, Tag
 
 
 def index(request, tag: str = ''):
-    questions = Question.objects.order_by("-reputation__value")
-    # questions = Question.manager.all()
+    questions = Question.manager.get_popular()
     page_number = request.GET.get('page')
     paginator = Paginator(questions, 5)
     try:
@@ -39,7 +38,6 @@ def settings(request):
 
 
 def questionAnswer(request, id_question: int):
-    # answers = ANSWERS
     question = Question.objects.filter(id=id_question)
     if len(question) <= 0:
         return
