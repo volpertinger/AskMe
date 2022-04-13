@@ -85,7 +85,8 @@ class Profile(User):
 
 class Reputation(models.Model):
     value = models.IntegerField()
-    authors = models.ManyToManyField(Profile, blank=True)
+    authors_likes = models.ManyToManyField(Profile, blank=True)
+    authors_dislikes = models.ManyToManyField(Profile, blank=True)
 
     def __str__(self):
         return str(self.value)
