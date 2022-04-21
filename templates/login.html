@@ -3,9 +3,6 @@
 {% block content %}
 
     <h2 class="mt-5">Log in</h2>
-    <div class="row logInRow">
-        <p class="warningMessages">some warning messages</p>
-    </div>
     <form action="/login/" method="post">
         {% csrf_token %}
         {% bootstrap_form form %}
