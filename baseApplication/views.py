@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from baseApplication.models import Profile, Like, Dislike, Question, Answer, Tag
 from django.http import Http404
-from .forms import LoginForm
+from .forms import LoginForm, RegistrationForm
 
 
 def get_posts(request, array):
@@ -66,7 +66,17 @@ def login(request):
 
 def registration(request):
     popular_tags = Tag.manager.get_popular()
-    return render(request, "registration.html", {"isMember": False, "tags": popular_tags})
+    if request.method == "GET":
+        form = RegistrationForm()
+    elif request.method == "POST":
+        form = RegistrationForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password')
+            auth.authenticate(username=username, password=raw_password)
+            return login(request)
+    return render(request, "registration.html", {"isMember": False, "tags": popular_tags, "form": form})
 
 
 def settings(request):
