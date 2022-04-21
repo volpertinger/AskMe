@@ -57,7 +57,9 @@ def login(request):
         if form.is_valid():
             user = auth.authenticate(request, **form.cleaned_data)
             if user:
-                return redirect(reverse(index))
+                return index(request)
+            else:
+                form.add_error("password", "Invalid username or password")
 
     return render(request, "login.html", {"isMember": False, "tags": popular_tags, "form": form})
 
