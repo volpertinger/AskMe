@@ -21,9 +21,11 @@ def clearDB():
 def addUsers():
     for i in range(USERS_COUNT):
         username = "User_" + str(i)
-        password = "notCommonPassword" + str(i)
+        password = "password" + str(i)
         email = "email" + str(i) + "@mail.ru"
-        Profile(username=username, password=password, email=email).save()
+        profile = Profile(username=username, password=password, email=email)
+        profile.set_password(password)
+        profile.save()
 
 
 def addTags():
