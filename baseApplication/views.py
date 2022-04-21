@@ -1,8 +1,12 @@
-from django.shortcuts import render
+from django.contrib import auth
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.urls import reverse
+
 from baseApplication.models import Profile, Like, Dislike, Question, Answer, Tag
 from django.http import Http404
+from .forms import LoginForm
 
 
 def get_posts(request, array):
@@ -44,7 +48,18 @@ def addQuestion(request):
 
 def login(request):
     popular_tags = Tag.manager.get_popular()
-    return render(request, "login.html", {"isMember": False, "tags": popular_tags})
+    print(request.POST)
+
+    if request.method == "GET":
+        form = LoginForm()
+    elif request.method == "POST":
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            user = auth.authenticate(request, **form.cleaned_data)
+            if user:
+                return redirect(reverse(index))
+
+    return render(request, "login.html", {"isMember": False, "tags": popular_tags, "form": form})
 
 
 def registration(request):
