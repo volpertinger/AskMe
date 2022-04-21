@@ -46,6 +46,11 @@ def addQuestion(request):
     return render(request, "addQuestion.html", {"isMember": True, "tags": popular_tags})
 
 
+def logout(request):
+    auth.logout(request)
+    return redirect('/')
+
+
 def login(request):
     popular_tags = Tag.manager.get_popular()
 
@@ -56,7 +61,7 @@ def login(request):
         if form.is_valid():
             user = auth.authenticate(request, **form.cleaned_data)
             if user:
-                return index(request)
+                return redirect('/')
             else:
                 form.add_error("password", "Invalid username or password")
 
@@ -75,7 +80,7 @@ def registration(request):
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password')
             auth.authenticate(username=username, password=raw_password)
-            return login(request)
+            return redirect('/login/')
     return render(request, "registration.html", {"isMember": False, "tags": popular_tags, "form": form})
 
 
