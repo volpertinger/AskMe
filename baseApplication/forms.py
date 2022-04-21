@@ -11,13 +11,17 @@ class RegistrationForm(forms.ModelForm):
 
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional')
     last_name = forms.CharField(max_length=30, required=False, help_text='Optional')
     email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.')
 
+    field_order = ["username", "email", "password", "confirm_password", "first_name", "last_name", "profile_image"]
+
     def save(self, commit=True):
         profile = Profile(username=self.cleaned_data["username"], first_name=self.cleaned_data["first_name"],
-                          last_name=self.cleaned_data["last_name"], email=self.cleaned_data["email"])
+                          last_name=self.cleaned_data["last_name"], email=self.cleaned_data["email"],
+                          profile_image=self.cleaned_data["profile_image"])
         profile.set_password(self.cleaned_data["password"])
         if commit:
             profile.save()
@@ -30,6 +34,18 @@ class RegistrationForm(forms.ModelForm):
             raise ValidationError(error_text)
         return data
 
+    def clean_confirm_password(self):
+        data = self.cleaned_data["confirm_password"]
+        cleaned_data = super(RegistrationForm, self).clean()
+        confirm_data = cleaned_data["password"]
+        if len(data) < self.__password_min_length:
+            error_text = "Password is too short. Minimum " + str(self.__password_min_length) + " symbols required"
+            raise ValidationError(error_text)
+        if data != confirm_data:
+            error_text = "Passwords do not match"
+            raise ValidationError(error_text)
+        return data
+
     def clean_password(self):
         data = self.cleaned_data["password"]
         if len(data) < self.__password_min_length:
@@ -39,14 +55,15 @@ class RegistrationForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ["username", "password", "email", "profile_image"]
+        fields = ["username", "password", "email", "profile_image", "first_name", "last_name"]
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput())
     __password_min_length = 4
     __username_min_length = 6
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput())
+    field_order = ["username", "password"]
 
     def clean_password(self):
         data = self.cleaned_data["password"]

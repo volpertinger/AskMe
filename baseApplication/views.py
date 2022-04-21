@@ -48,7 +48,6 @@ def addQuestion(request):
 
 def login(request):
     popular_tags = Tag.manager.get_popular()
-    print(request.POST)
 
     if request.method == "GET":
         form = LoginForm()
@@ -66,6 +65,7 @@ def login(request):
 
 def registration(request):
     popular_tags = Tag.manager.get_popular()
+
     if request.method == "GET":
         form = RegistrationForm()
     elif request.method == "POST":
