@@ -20,8 +20,8 @@ def clearDB():
 
 def addUsers():
     for i in range(USERS_COUNT):
-        username = "User#" + str(i)
-        password = "Password" + str(i)
+        username = "User_" + str(i)
+        password = "notCommonPassword" + str(i)
         email = "email" + str(i) + "@mail.ru"
         Profile(username=username, password=password, email=email).save()
 
