@@ -16,10 +16,10 @@
                     <a href="/addQuestion/" class="btn btn-outline-success buttonNavBar" role="button">Ask!</a>
                 </div>
                 <div class="navbar-nav userPanel" id="userPanel">
-                    {% if isMember == True %}
+                    {% if user.is_authenticated %}
                         <img src="{% static "images/tmp_static/profile_icons/user_01.jpg" %}" class="userAvatar"
                              alt="user">
-                        <a class="nav-link" aria-current="page">user login</a>
+                        <a class="nav-link" aria-current="page">{{ user.username }}</a>
                         <a href="/settings/" class="btn btn-outline-info buttonNavBar" role="button">settings</a>
                         <a href="/logout/" class="btn btn-outline-danger buttonNavBar" role="button">log out</a>
                     {% else %}

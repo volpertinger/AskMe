@@ -27,6 +27,7 @@ def index(request, tag: str = '', sort: str = ''):
     header = "popular questions"
     popular_tags = Tag.manager.get_popular()
     questions = Question.manager.get_popular()
+    user = request.user
     if sort == "latest":
         header = "latest questions"
         questions = Question.manager.get_latest()
@@ -38,7 +39,7 @@ def index(request, tag: str = '', sort: str = ''):
     posts, page_number = get_posts(request, questions)
     return render(request, "index.html",
                   {"questions": questions, "isMember": True, "tag": tag, "page": page_number,
-                   "posts": posts, "tags": popular_tags, "header": header})
+                   "posts": posts, "tags": popular_tags, "header": header, "user": user})
 
 
 def addQuestion(request):
@@ -60,6 +61,7 @@ def login(request):
         form = LoginForm(data=request.POST)
         if form.is_valid():
             user = auth.authenticate(request, **form.cleaned_data)
+            auth.login(request, user)
             if user:
                 return redirect('/')
             else:
