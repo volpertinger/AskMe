@@ -61,8 +61,8 @@ def login(request):
         form = LoginForm(data=request.POST)
         if form.is_valid():
             user = auth.authenticate(request, **form.cleaned_data)
-            auth.login(request, user)
             if user:
+                auth.login(request, user)
                 return redirect('/')
             else:
                 form.add_error("password", "Invalid username or password")
