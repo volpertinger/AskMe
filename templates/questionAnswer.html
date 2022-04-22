@@ -1,4 +1,5 @@
 {% extends "include/base.html" %}
+{% load bootstrap4 %}
 {% block content %}
     {% include "include/questionInAnswer.html" %}
     {% for answer in posts %}
@@ -6,10 +7,15 @@
     {% endfor %}
     {% include "include/pagination.html" with page=posts %}
 
-    <div class="form-group answerBox">
-        <label for="Answer"></label><textarea class="form-control answerTextArea" maxlength="1024" id="Answer" rows="10"
-                                              placeholder="Enter your answer here..."></textarea>
-        <button type="submit" class="btn btn-outline-success mb-2 answerButton">Answer</button>
-    </div>
+    {% if user.is_authenticated %}
 
+        <form method="post">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <div>
+                <button type="submit" class="btn btn-outline-success mb-2 answerButton">Answer</button>
+            </div>
+
+        </form>
+    {% endif %}
 {% endblock %}

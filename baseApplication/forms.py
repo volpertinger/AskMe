@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Profile
+from .models import Profile, Answer
 
 
 # @login_required
@@ -78,3 +78,22 @@ class LoginForm(forms.Form):
             error_text = "Username is too short. Minimum " + str(self.__username_min_length) + " symbols required"
             raise ValidationError(error_text)
         return data
+
+
+class AnswerForm(forms.ModelForm):
+    __text_max_length = 4096
+    text = forms.CharField(widget=forms.Textarea(attrs={'rows': '15'}))
+
+    def clean_text(self):
+        data = self.cleaned_data["text"]
+        if len(data) > self.__text_max_length:
+            error_text = "Answer is too long. Maximum " + str(self.__text_max_length) + " symbols required"
+            raise ValidationError(error_text)
+        if len(data) == 0:
+            error_text = "Answer is empty"
+            raise ValidationError(error_text)
+        return data
+
+    class Meta:
+        model = Answer
+        fields = ["text"]

@@ -7,8 +7,10 @@ from django.urls import reverse
 
 from baseApplication.models import Profile, Like, Dislike, Question, Answer, Tag
 from django.http import Http404
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, AnswerForm
 
+
+# helping functions
 
 def get_posts(request, array):
     page_number = request.GET.get('page')
@@ -30,6 +32,19 @@ def get_profile(user):
         return user
     return profile[0]
 
+
+def save_answer(text, user, question):
+    like = Like()
+    like.save()
+    dislike = Dislike()
+    dislike.save()
+    reputation = 0
+    answer = Answer(text=text, question=question, like=like, dislike=dislike, author=user,
+                    reputation=reputation)
+    answer.save()
+
+
+# Views
 
 def index(request, tag: str = '', sort: str = ''):
     header = "popular questions"
@@ -121,6 +136,14 @@ def questionAnswer(request, id_question: int):
     posts, page_number = get_posts(request, answers)
 
     user = get_profile(user)
+
+    if request.method == "POST":
+        form = AnswerForm(data=request.POST)
+        if form.is_valid():
+            save_answer(form.clean_text(), user, question)
+    else:
+        form = AnswerForm()
+
     return render(request, "questionAnswer.html",
                   {"question": question, "answers": answers, "page": page_number, "posts": posts,
-                   "tags": popular_tags, "user": user})
+                   "tags": popular_tags, "user": user, "form": form})
