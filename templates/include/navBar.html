@@ -17,8 +17,6 @@
                 </div>
                 <div class="navbar-nav userPanel" id="userPanel">
                     {% if user.is_authenticated %}
-                        <img src="{% static "images/tmp_static/profile_icons/user_01.jpg" %}" class="userAvatar"
-                             alt="user">
                         <img src="{{ user.profile_image.url }}" class="userAvatar"
                              alt="profile_image">
                         <a class="nav-link" aria-current="page">{{ user.username }}</a>
