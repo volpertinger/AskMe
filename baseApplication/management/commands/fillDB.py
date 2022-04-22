@@ -1,5 +1,9 @@
+from io import open
+
 from django.core.management.base import BaseCommand
 from baseApplication.models import Profile, Like, Dislike, Question, Answer, Tag
+from django.core.files.base import ContentFile
+from django.core.files import File
 
 USERS_COUNT = 10  # 10 000
 QUESTION_COUNT = 100  # 100 000
@@ -23,8 +27,11 @@ def addUsers():
         username = "User_" + str(i)
         password = "password" + str(i)
         email = "email" + str(i) + "@mail.ru"
+        image_path = "profile_images/user_01.jpg"
         profile = Profile(username=username, password=password, email=email)
         profile.set_password(password)
+
+        profile.profile_image = image_path
         profile.save()
 
 
