@@ -23,6 +23,13 @@ def get_posts(request, array):
     return posts, page_number
 
 
+def get_profile(user):
+    profile = Profile.manager.get_user(user)
+    if len(profile) < 1:
+        return user
+    return profile[0]
+
+
 def index(request, tag: str = '', sort: str = ''):
     header = "popular questions"
     popular_tags = Tag.manager.get_popular()
@@ -37,6 +44,8 @@ def index(request, tag: str = '', sort: str = ''):
         if len(questions) <= 0:
             raise Http404("Tag does not exist")
     posts, page_number = get_posts(request, questions)
+
+    user = get_profile(user)
     return render(request, "index.html",
                   {"questions": questions, "tag": tag, "page": page_number,
                    "posts": posts, "tags": popular_tags, "header": header, "user": user})
@@ -45,6 +54,7 @@ def index(request, tag: str = '', sort: str = ''):
 def addQuestion(request):
     popular_tags = Tag.manager.get_popular()
     user = request.user
+    user = get_profile(user)
     return render(request, "addQuestion.html", {"user": user, "tags": popular_tags})
 
 
@@ -69,6 +79,7 @@ def login(request):
     else:
         form = LoginForm()
 
+    user = get_profile(user)
     return render(request, "login.html", {"tags": popular_tags, "form": form, "user": user})
 
 
@@ -92,6 +103,7 @@ def settings(request):
     popular_tags = Tag.manager.get_popular()
     user = request.user
 
+    user = get_profile(user)
     return render(request, "settings.html", {"user": user, "tags": popular_tags})
 
 
@@ -105,6 +117,8 @@ def questionAnswer(request, id_question: int):
     question = question[0]
     answers = Answer.manager.get_popular(question)
     posts, page_number = get_posts(request, answers)
+
+    user = get_profile(user)
     return render(request, "questionAnswer.html",
                   {"question": question, "answers": answers, "page": page_number, "posts": posts,
                    "tags": popular_tags, "user": user})

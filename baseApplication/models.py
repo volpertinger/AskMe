@@ -84,6 +84,19 @@ class TagManager(models.Manager):
         return self.get_queryset().get_by_title(title)
 
 
+class ProfileQuerySet(models.QuerySet):
+    def user(self, user):
+        return self.filter(username=user.username)
+
+
+class ProfileManager(models.Manager):
+    def get_queryset(self):
+        return ProfileQuerySet(self.model, using=self.db)
+
+    def get_user(self, user):
+        return self.get_queryset().user(user)
+
+
 # Models
 
 class Profile(User):
@@ -91,6 +104,8 @@ class Profile(User):
 
     def __str__(self):
         return str(self.username)
+
+    manager = ProfileManager()
 
 
 class Like(models.Model):
