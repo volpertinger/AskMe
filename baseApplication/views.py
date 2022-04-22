@@ -38,13 +38,14 @@ def index(request, tag: str = '', sort: str = ''):
             raise Http404("Tag does not exist")
     posts, page_number = get_posts(request, questions)
     return render(request, "index.html",
-                  {"questions": questions, "isMember": True, "tag": tag, "page": page_number,
+                  {"questions": questions, "tag": tag, "page": page_number,
                    "posts": posts, "tags": popular_tags, "header": header, "user": user})
 
 
 def addQuestion(request):
     popular_tags = Tag.manager.get_popular()
-    return render(request, "addQuestion.html", {"isMember": True, "tags": popular_tags})
+    user = request.user
+    return render(request, "addQuestion.html", {"user": user, "tags": popular_tags})
 
 
 def logout(request):
@@ -54,10 +55,9 @@ def logout(request):
 
 def login(request):
     popular_tags = Tag.manager.get_popular()
+    user = request.user
 
-    if request.method == "GET":
-        form = LoginForm()
-    elif request.method == "POST":
+    if request.method == "POST":
         form = LoginForm(data=request.POST)
         if form.is_valid():
             user = auth.authenticate(request, **form.cleaned_data)
@@ -66,16 +66,16 @@ def login(request):
                 return redirect('/')
             else:
                 form.add_error("password", "Invalid username or password")
+    else:
+        form = LoginForm()
 
-    return render(request, "login.html", {"isMember": False, "tags": popular_tags, "form": form})
+    return render(request, "login.html", {"tags": popular_tags, "form": form, "user": user})
 
 
 def registration(request):
     popular_tags = Tag.manager.get_popular()
 
-    if request.method == "GET":
-        form = RegistrationForm()
-    elif request.method == "POST":
+    if request.method == "POST":
         form = RegistrationForm(data=request.POST)
         if form.is_valid():
             form.save()
@@ -83,16 +83,22 @@ def registration(request):
             raw_password = form.cleaned_data.get('password')
             auth.authenticate(username=username, password=raw_password)
             return redirect('/login/')
-    return render(request, "registration.html", {"isMember": False, "tags": popular_tags, "form": form})
+    else:
+        form = RegistrationForm()
+    return render(request, "registration.html", {"tags": popular_tags, "form": form})
 
 
 def settings(request):
     popular_tags = Tag.manager.get_popular()
-    return render(request, "settings.html", {"isMember": True, "tags": popular_tags})
+    user = request.user
+
+    return render(request, "settings.html", {"user": user, "tags": popular_tags})
 
 
 def questionAnswer(request, id_question: int):
     popular_tags = Tag.manager.get_popular()
+    user = request.user
+
     question = Question.manager.all().filter(id=id_question)
     if len(question) <= 0:
         raise Http404("Question does not exist")
@@ -100,5 +106,5 @@ def questionAnswer(request, id_question: int):
     answers = Answer.manager.get_popular(question)
     posts, page_number = get_posts(request, answers)
     return render(request, "questionAnswer.html",
-                  {"question": question, "answers": answers, "isMember": True, "page": page_number, "posts": posts,
-                   "tags": popular_tags})
+                  {"question": question, "answers": answers, "page": page_number, "posts": posts,
+                   "tags": popular_tags, "user": user})
