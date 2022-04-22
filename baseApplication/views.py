@@ -1,4 +1,5 @@
 from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -51,6 +52,7 @@ def index(request, tag: str = '', sort: str = ''):
                    "posts": posts, "tags": popular_tags, "header": header, "user": user})
 
 
+@login_required
 def addQuestion(request):
     popular_tags = Tag.manager.get_popular()
     user = request.user
