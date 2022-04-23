@@ -66,11 +66,18 @@ def save_answer(text, user, question):
     answer.save()
 
 
+def get_popular_tags(number=10):
+    tags = Tag.manager.get_popular()
+    if len(tags) <= number:
+        return tags
+    return tags[:number]
+
+
 # Views
 
 def index(request, tag: str = '', sort: str = ''):
     header = "popular questions"
-    popular_tags = Tag.manager.get_popular()
+    popular_tags = get_popular_tags()
     questions = Question.manager.get_popular()
     user = request.user
     if sort == "latest":
@@ -91,7 +98,7 @@ def index(request, tag: str = '', sort: str = ''):
 
 @login_required
 def addQuestion(request):
-    popular_tags = Tag.manager.get_popular()
+    popular_tags = get_popular_tags()
     user = request.user
     user = get_profile(user)
     if request.method == "POST":
@@ -111,7 +118,7 @@ def logout(request):
 
 
 def login(request):
-    popular_tags = Tag.manager.get_popular()
+    popular_tags = get_popular_tags()
     user = request.user
 
     if request.method == "POST":
@@ -131,7 +138,7 @@ def login(request):
 
 
 def registration(request):
-    popular_tags = Tag.manager.get_popular()
+    popular_tags = get_popular_tags()
 
     if request.method == "POST":
         form = RegistrationForm(data=request.POST)
@@ -147,7 +154,7 @@ def registration(request):
 
 
 def settings(request):
-    popular_tags = Tag.manager.get_popular()
+    popular_tags = get_popular_tags()
     user = request.user
 
     user = get_profile(user)
@@ -155,7 +162,7 @@ def settings(request):
 
 
 def questionAnswer(request, id_question: int):
-    popular_tags = Tag.manager.get_popular()
+    popular_tags = get_popular_tags()
     user = request.user
 
     question = Question.manager.all().filter(id=id_question)
