@@ -26,6 +26,13 @@ def get_posts(request, array):
     return posts, page_number
 
 
+def get_last_posts(request, array):
+    page_number = request.GET.get('page')
+    paginator = Paginator(array, 5)
+    posts = paginator.page(paginator.num_pages)
+    return posts, page_number
+
+
 def get_profile(user):
     profile = Profile.manager.get_user(user)
     if len(profile) < 1:
@@ -178,6 +185,9 @@ def questionAnswer(request, id_question: int):
         form = AnswerForm(data=request.POST)
         if form.is_valid():
             save_answer(form.clean_text(), user, question)
+            # получаем новую пагинацию ответов
+            answers = Answer.manager.get_popular(question)
+            posts, page_number = get_last_posts(request, answers)
     else:
         form = AnswerForm()
 
