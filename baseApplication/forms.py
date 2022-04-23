@@ -3,8 +3,6 @@ from django.core.exceptions import ValidationError
 from .models import Profile, Answer
 
 
-# @login_required
-
 class RegistrationForm(forms.ModelForm):
     __password_min_length = 4
     __username_min_length = 6
@@ -61,8 +59,10 @@ class RegistrationForm(forms.ModelForm):
 class LoginForm(forms.Form):
     __password_min_length = 4
     __username_min_length = 6
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput())
+    __username_max_length = 64
+    __password_max_length = 64
+    username = forms.CharField(max_length=__username_max_length)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'maxlength': __password_max_length}))
     field_order = ["username", "password"]
 
     def clean_password(self):
@@ -82,7 +82,10 @@ class LoginForm(forms.Form):
 
 class AnswerForm(forms.ModelForm):
     __text_max_length = 4096
-    text = forms.CharField(widget=forms.Textarea(attrs={'rows': '15'}))
+    __help_text = "Maximum " + str(__text_max_length) + " symbols"
+    text = forms.CharField(widget=forms.Textarea(
+        attrs={'rows': '15', 'placeholder': 'Input your answer here', 'maxlength': __text_max_length}), label="",
+        help_text=__help_text)
 
     def clean_text(self):
         data = self.cleaned_data["text"]
