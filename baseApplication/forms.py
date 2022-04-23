@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Profile, Answer
+from .models import Profile, Answer, Question
 
 
 class RegistrationForm(forms.ModelForm):
@@ -100,3 +100,54 @@ class AnswerForm(forms.ModelForm):
     class Meta:
         model = Answer
         fields = ["text"]
+
+
+class QuestionForm(forms.ModelForm):
+    __text_max_length = 4096
+    __title_max_length = 128
+    __tags_max_length = 128
+    __help_text = "Maximum " + str(__text_max_length) + " symbols"
+    __help_title = "Maximum " + str(__title_max_length) + " symbols"
+    __help_tag = "Maximum " + str(__tags_max_length) + " symbols"
+
+    text = forms.CharField(widget=forms.Textarea(
+        attrs={'rows': '15', 'placeholder': 'Input your question here', 'maxlength': __text_max_length}),
+        label="Questions",
+        help_text=__help_text)
+
+    title = forms.CharField(max_length=__title_max_length, help_text=__help_title,
+                            widget=forms.TextInput(attrs={'placeholder': 'Title', 'rows': '1'}))
+
+    tags = forms.CharField(max_length=__tags_max_length, help_text=__help_tag,
+                           widget=forms.TextInput(attrs={'placeholder': 'Input tags through a space', 'rows': '1'}))
+
+    def clean_text(self):
+        data = self.cleaned_data["text"]
+        if len(data) > self.__text_max_length:
+            error_text = "Question is too long. Maximum " + str(self.__text_max_length) + " symbols required"
+            raise ValidationError(error_text)
+        if len(data) == 0:
+            error_text = "Question is empty"
+            raise ValidationError(error_text)
+        return data
+
+    def clean_title(self):
+        data = self.cleaned_data["title"]
+        if len(data) > self.__title_max_length:
+            error_text = "Title is too long. Maximum " + str(self.__text_max_length) + " symbols required"
+            raise ValidationError(error_text)
+        if len(data) == 0:
+            error_text = "Title is empty"
+            raise ValidationError(error_text)
+        return data
+
+    def clean_tags(self):
+        data = self.cleaned_data["tags"]
+        if len(data) > self.__title_max_length:
+            error_text = "Tags is too long. Maximum " + str(self.__tags_max_length) + " symbols required"
+            raise ValidationError(error_text)
+        return data
+
+    class Meta:
+        model = Question
+        fields = ["title", "text"]

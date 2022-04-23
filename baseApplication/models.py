@@ -9,7 +9,7 @@ class QuestionQuerySet(models.QuerySet):
         return self.order_by("-reputation")
 
     def latest(self):
-        return self.order_by("publish_date")
+        return self.order_by("-publish_date")
 
 
 class QuestionManager(models.Manager):

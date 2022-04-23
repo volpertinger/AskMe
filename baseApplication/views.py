@@ -7,7 +7,7 @@ from django.urls import reverse
 
 from baseApplication.models import Profile, Like, Dislike, Question, Answer, Tag
 from django.http import Http404
-from .forms import LoginForm, RegistrationForm, AnswerForm
+from .forms import LoginForm, RegistrationForm, AnswerForm, QuestionForm
 
 
 # helping functions
@@ -31,6 +31,28 @@ def get_profile(user):
     if len(profile) < 1:
         return user
     return profile[0]
+
+
+def save_question(user, title, text, tags):
+    like = Like()
+    like.save()
+    dislike = Dislike()
+    dislike.save()
+    reputation = 0
+    question = Question(title=title, text=text, like=like, dislike=dislike, author=user, reputation=reputation)
+    question.save()
+
+    tags = tags.split(' ')
+    for title in tags:
+        tag = Tag.manager.get_tag_by_title(title)
+        if tag:
+            tag.questions.add(question)
+            continue
+        tag = Tag(title=title)
+        tag.save()
+        tag.questions.add(question)
+
+    return question
 
 
 def save_answer(text, user, question):
@@ -72,7 +94,15 @@ def addQuestion(request):
     popular_tags = Tag.manager.get_popular()
     user = request.user
     user = get_profile(user)
-    return render(request, "addQuestion.html", {"user": user, "tags": popular_tags})
+    if request.method == "POST":
+        form = QuestionForm(data=request.POST)
+        if form.is_valid():
+            question = save_question(user, form.clean_title(), form.clean_text(), form.clean_tags())
+            redirect_url = '/questionAnswer/' + str(question.id)
+            return redirect(redirect_url)
+    else:
+        form = QuestionForm()
+    return render(request, "addQuestion.html", {"user": user, "tags": popular_tags, "form": form})
 
 
 def logout(request):
