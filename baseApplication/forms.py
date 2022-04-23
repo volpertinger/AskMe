@@ -6,10 +6,12 @@ from .models import Profile, Answer, Question
 class RegistrationForm(forms.ModelForm):
     __password_min_length = 4
     __username_min_length = 6
+    __password_max_length = 64
+    __username_max_length = 64
 
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
-    confirm_password = forms.CharField(widget=forms.PasswordInput)
+    username = forms.CharField(max_length=__username_max_length)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'maxlength': __password_max_length}))
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'maxlength': __password_max_length}))
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional')
     last_name = forms.CharField(max_length=30, required=False, help_text='Optional')
     email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.')
@@ -151,3 +153,62 @@ class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
         fields = ["title", "text"]
+
+
+class SettingsForm(forms.Form):
+    __password_min_length = 4
+    __username_min_length = 6
+    __username_max_length = 64
+    __password_max_length = 64
+    username = forms.CharField(max_length=__username_max_length, required=False)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'maxlength': __password_max_length}), required=False)
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'maxlength': __password_max_length}),
+                                       required=False)
+    email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.', required=False)
+    first_name = forms.CharField(max_length=30, required=False)
+    last_name = forms.CharField(max_length=30, required=False)
+    profile_image = forms.ImageField(required=False)
+
+    def clean_password(self):
+        data = self.cleaned_data["password"]
+        if len(data) == 0:
+            return data
+        if len(data) < self.__password_min_length:
+            error_text = "Password is too short. Minimum " + str(self.__password_min_length) + " symbols required"
+            raise ValidationError(error_text)
+        return data
+
+    def clean_confirm_password(self):
+        data = self.cleaned_data["confirm_password"]
+        cleaned_data = super(SettingsForm, self).clean()
+        confirm_data = cleaned_data["password"]
+        if len(confirm_data) == 0 and len(data) == 0:
+            return data
+        if len(data) < self.__password_min_length:
+            error_text = "Password is too short. Minimum " + str(self.__password_min_length) + " symbols required"
+            raise ValidationError(error_text)
+        if data != confirm_data:
+            error_text = "Passwords do not match"
+            raise ValidationError(error_text)
+        return data
+
+    def clean_username(self):
+        data = self.cleaned_data["username"]
+        if len(data) == 0:
+            return data
+        if len(data) < self.__username_min_length:
+            error_text = "Username is too short. Minimum " + str(self.__username_min_length) + " symbols required"
+            raise ValidationError(error_text)
+        return data
+
+    def clean_email(self):
+        return self.cleaned_data["email"]
+
+    def clean_first_name(self):
+        return self.cleaned_data["first_name"]
+
+    def clean_last_name(self):
+        return self.cleaned_data["last_name"]
+
+    def clean_profile_image(self):
+        return self.cleaned_data["profile_image"]

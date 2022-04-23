@@ -1,52 +1,16 @@
 {% extends "include/base.html" %}
+{% load bootstrap4 %}
 {% block content %}
     <h2 class="mt-5">Settings</h2>
-    <div class="row logInRow">
-        <p class="warningMessages">some warning messages</p>
-    </div>
-    <div class="row logInRow">
-        <div class="col-3 logInRow">
-            <h5>Login</h5>
-        </div>
-        <div class="col-7 form-group logInRow">
-            <input type="text" maxlength="32" class="form-control" placeholder="dr_strangelove" id="Login">
-        </div>
-    </div>
 
-    <div class="row logInRow">
-        <div class="col-3 logInRow">
-            <h5>NickName</h5>
-        </div>
-        <div class="col-7 form-group logInRow">
-            <input type="text" maxlength="32" class="form-control" placeholder="Dr. Strangelove" id="NickName">
-        </div>
-    </div>
+    <form action="/settings/" method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
 
-    <div class="row logInRow">
-        <div class="col-3 logInRow">
-            <h5>Email</h5>
-        </div>
-        <div class="col-7 form-group logInRow">
-            <input type="text" maxlength="320" class="form-control" placeholder="example@gmail.com" id="Email">
-        </div>
-    </div>
-
-    <div class="row logInRow">
-        <div class="col-3 newQuestionTitle">
-            <h5>Upload avatar</h5>
-        </div>
-        <div class="col-7 form-group answerBox">
-            <input type="file" class="form-control" id="customFile"/>
-        </div>
-    </div>
-
-    <div class="row logInRow">
-        <div class="col-3 newQuestionTitle">
-            <h5></h5>
-        </div>
-        <div class="col-7 form-group answerBox">
+        <div class="col-7 form-group">
             <button type="submit" class="btn btn-outline-success mb-2 answerButton">Save</button>
         </div>
-    </div>
+
+    </form>
 
 {% endblock %}

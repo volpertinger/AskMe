@@ -7,7 +7,7 @@ from django.urls import reverse
 
 from baseApplication.models import Profile, Like, Dislike, Question, Answer, Tag
 from django.http import Http404
-from .forms import LoginForm, RegistrationForm, AnswerForm, QuestionForm
+from .forms import LoginForm, RegistrationForm, AnswerForm, QuestionForm, SettingsForm
 
 
 # helping functions
@@ -78,6 +78,22 @@ def get_popular_tags(number=10):
     if len(tags) <= number:
         return tags
     return tags[:number]
+
+
+def update_settings(user, username, email, password, first_name, last_name, profile_image):
+    if username:
+        user.username = username
+    if email:
+        user.email = email
+    if password:
+        user.set_password(password)
+    if first_name:
+        user.first_name = first_name
+    if last_name:
+        user.last_name = last_name
+    if profile_image:
+        user.profile_image = profile_image
+    user.save()
 
 
 # Views
@@ -160,12 +176,21 @@ def registration(request):
     return render(request, "registration.html", {"tags": popular_tags, "form": form})
 
 
+@login_required()
 def settings(request):
     popular_tags = get_popular_tags()
     user = request.user
-
     user = get_profile(user)
-    return render(request, "settings.html", {"user": user, "tags": popular_tags})
+
+    if request.method == "POST":
+        form = SettingsForm(data=request.POST)
+        if form.is_valid():
+            update_settings(user, form.clean_username(), form.clean_email(), form.clean_password(),
+                            form.clean_first_name(), form.clean_last_name(), form.clean_profile_image())
+    else:
+        form = SettingsForm()
+
+    return render(request, "settings.html", {"user": user, "tags": popular_tags, "form": form})
 
 
 def questionAnswer(request, id_question: int):
