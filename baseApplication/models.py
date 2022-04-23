@@ -67,7 +67,11 @@ class TagQuerySet(models.QuerySet):
         return self.filter(questions=question)
 
     def get_by_title(self, title):
-        return self.filter(title=title)[0]
+        tags = self.filter(title=title)
+        if len(tags) > 0:
+            return tags[0]
+        else:
+            return None
 
 
 class TagManager(models.Manager):

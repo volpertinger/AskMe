@@ -45,7 +45,7 @@ def save_question(user, title, text, tags):
     tags = tags.split(' ')
     for title in tags:
         tag = Tag.manager.get_tag_by_title(title)
-        if tag:
+        if tag is not None:
             tag.questions.add(question)
             continue
         tag = Tag(title=title)
