@@ -104,7 +104,8 @@ class ProfileManager(models.Manager):
 # Models
 
 class Profile(User):
-    profile_image = models.ImageField(upload_to="profile_images/", null=True, blank=True)
+    profile_image = models.ImageField(upload_to="profile_images/", null=True, blank=True,
+                                      default="profile_images/user_01.jpg")
 
     def __str__(self):
         return str(self.username)
