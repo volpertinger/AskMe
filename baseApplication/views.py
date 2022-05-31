@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 
 from baseApplication.models import Profile, Like, Dislike, Question, Answer, Tag
 from django.http import Http404
@@ -179,7 +180,7 @@ def registration(request):
     return render(request, "registration.html", {"tags": popular_tags, "form": form})
 
 
-@login_required()
+@login_required
 def settings(request):
     popular_tags = get_popular_tags()
     user = request.user
@@ -226,6 +227,10 @@ def questionAnswer(request, id_question: int):
                    "tags": popular_tags, "user": user, "form": form})
 
 
+@login_required
+@require_POST
 def vote(request):
     print(request.GET)
+    question_id = request.POST['question_id']
+    print(question_id)
     return JsonResponse({'result_code': 0})
