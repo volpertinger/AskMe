@@ -2,7 +2,7 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.forms import model_to_dict
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import reverse
 
@@ -224,3 +224,8 @@ def questionAnswer(request, id_question: int):
     return render(request, "questionAnswer.html",
                   {"question": question, "answers": answers, "page": page_number, "posts": posts,
                    "tags": popular_tags, "user": user, "form": form})
+
+
+def vote(request):
+    print(request.GET)
+    return JsonResponse({'result_code': 0})
