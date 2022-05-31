@@ -15,6 +15,7 @@ class RegistrationForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional')
     last_name = forms.CharField(max_length=30, required=False, help_text='Optional')
     email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.')
+    profile_image = forms.ImageField(required=False)
 
     field_order = ["username", "email", "password", "confirm_password", "first_name", "last_name", "profile_image"]
 

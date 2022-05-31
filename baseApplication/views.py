@@ -1,5 +1,6 @@
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from django.forms import model_to_dict
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -188,7 +189,9 @@ def settings(request):
             update_settings(user, form.clean_username(), form.clean_email(), form.clean_password(),
                             form.clean_first_name(), form.clean_last_name(), form.clean_profile_image())
     else:
-        form = SettingsForm()
+        initial_data = model_to_dict(user)
+        initial_data["profile_image"] = user.profile_image
+        form = SettingsForm(initial=initial_data)
 
     return render(request, "settings.html", {"user": user, "tags": popular_tags, "form": form})
 
