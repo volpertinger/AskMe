@@ -165,13 +165,15 @@ def registration(request):
     popular_tags = get_popular_tags()
 
     if request.method == "POST":
-        form = RegistrationForm(data=request.POST)
+        form = RegistrationForm(data=request.POST, files=request.FILES)
+        print(request.POST)
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password')
             auth.authenticate(username=username, password=raw_password)
             return redirect('/login/')
+
     else:
         form = RegistrationForm()
     return render(request, "registration.html", {"tags": popular_tags, "form": form})
@@ -184,7 +186,7 @@ def settings(request):
     user = get_profile(user)
 
     if request.method == "POST":
-        form = SettingsForm(data=request.POST)
+        form = SettingsForm(initial=request.POST, files=request.FILES)
         if form.is_valid():
             update_settings(user, form.clean_username(), form.clean_email(), form.clean_password(),
                             form.clean_first_name(), form.clean_last_name(), form.clean_profile_image())

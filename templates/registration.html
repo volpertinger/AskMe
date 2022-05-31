@@ -2,7 +2,7 @@
 {% load bootstrap4 %}
 {% block content %}
     <h2 class="mt-5">Registration</h2>
-    <form action="/registration/" method="post">
+    <form action="/registration/" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% bootstrap_form form %}
 

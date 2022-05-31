@@ -24,6 +24,7 @@ class RegistrationForm(forms.ModelForm):
                           last_name=self.cleaned_data["last_name"], email=self.cleaned_data["email"],
                           profile_image=self.cleaned_data["profile_image"])
         profile.set_password(self.cleaned_data["password"])
+        profile.profile_image = self.cleaned_data["profile_image"]
         if commit:
             profile.save()
         return profile
@@ -201,6 +202,16 @@ class SettingsForm(forms.Form):
             error_text = "Username is too short. Minimum " + str(self.__username_min_length) + " symbols required"
             raise ValidationError(error_text)
         return data
+
+    def save(self, commit=True):
+        profile = Profile(username=self.cleaned_data["username"], first_name=self.cleaned_data["first_name"],
+                          last_name=self.cleaned_data["last_name"], email=self.cleaned_data["email"],
+                          profile_image=self.cleaned_data["profile_image"])
+        profile.set_password(self.cleaned_data["password"])
+        profile.profile_image = self.cleaned_data["profile_image"]
+        if commit:
+            profile.save()
+        return profile
 
     def clean_email(self):
         return self.cleaned_data["email"]
