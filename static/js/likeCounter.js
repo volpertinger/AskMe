@@ -18,8 +18,6 @@ const csrftoken = getCookie('csrftoken');
 
 $(".btn_like").on('click', function (ev) {
     const $this = $(this);
-    console.log('liked');
-    console.log('this id=' + $this.data("id"));
 
     const request = new Request(
         'http://127.0.0.1:8000/vote/',
@@ -32,15 +30,17 @@ $(".btn_like").on('click', function (ev) {
             body: 'data_id=' + $this.data('id') + ' like'
         }
     )
+
+    const element = "." + $this.attr('type') + "_reputation";
     fetch(request).then(function (response) {
-        console.log(request);
+        const result = response.json().then(function (parsed) {
+            $(element).text(parsed.new_reputation);
+        });
     })
 })
 
 $(".btn_dislike").on('click', function (ev) {
     const $this = $(this);
-    console.log('disliked');
-    console.log('this id=' + $this.data("id"));
 
     const request = new Request(
         'http://127.0.0.1:8000/vote/',
@@ -50,10 +50,15 @@ $(".btn_dislike").on('click', function (ev) {
                 'X-CSRFToken': csrftoken,
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: 'data_id=' + $this.data('id') + ' dislike'
+            body:
+                'data_id=' + $this.data('id') + ' dislike'
+
         }
     )
+    const element = "." + $this.attr('type') + "_reputation";
     fetch(request).then(function (response) {
-        console.log(request);
+        const result = response.json().then(function (parsed) {
+            $(element).text(parsed.new_reputation);
+        });
     })
 })

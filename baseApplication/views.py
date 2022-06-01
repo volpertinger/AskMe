@@ -110,26 +110,25 @@ def reputation_processing(user, data):
     reputation_type = data[2]
 
     if type_id == 'answer':
-        if reputation_type == 'like':
-            like = Answer.manager.get_like(data_id)
-            like.authors.add(user)
-            like.save()
-        elif reputation_type == 'dislike':
-            dislike = Answer.manager.get_dislike(data_id)
-            dislike.authors.add(user)
-            dislike.save()
+        like = Answer.manager.get_like(data_id)
+        dislike = Answer.manager.get_dislike(data_id)
     elif type_id == 'question':
         like = Question.manager.get_like(data_id)
         dislike = Question.manager.get_dislike(data_id)
-        if reputation_type == 'like':
-            dislike.authors.remove(user)
-            like.authors.add(user)
-            like.save()
-        elif reputation_type == 'dislike':
-            like.authors.remove(user)
-            dislike.authors.add(user)
-            dislike.save()
-        update_question_reputation(data_id)
+    else:
+        return
+    if reputation_type == 'like':
+        dislike.authors.remove(user)
+        like.authors.add(user)
+        like.save()
+    elif reputation_type == 'dislike':
+        like.authors.remove(user)
+        dislike.authors.add(user)
+        dislike.save()
+    if type_id == 'answer':
+        return update_answer_reputation(data_id)
+    else:
+        return update_question_reputation(data_id)
 
 
 def update_question_reputation(question_id):
@@ -138,6 +137,7 @@ def update_question_reputation(question_id):
     dislike = Question.manager.get_dislike(question_id)
     question.reputation = int(like) - int(dislike)
     question.save()
+    return question.reputation
 
 
 def update_answer_reputation(answer_id):
@@ -146,6 +146,7 @@ def update_answer_reputation(answer_id):
     dislike = Answer.manager.get_dislike(answer_id)
     answer.reputation = int(like) - int(dislike)
     answer.save()
+    return answer.reputation
 
 
 # Views
@@ -283,5 +284,5 @@ def vote(request):
     user = request.user
     user = get_profile(user)
     full_id = request.POST['data_id']
-    reputation_processing(user, full_id)
-    return JsonResponse({'result_code': 0})
+    new_reputation = reputation_processing(user, full_id)
+    return JsonResponse({'new_reputation': new_reputation})
