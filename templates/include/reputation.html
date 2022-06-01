@@ -1,10 +1,21 @@
 <div class="btn-group reputationBox">
     {% csrf_token %}
-    <button class="btn btn-outline-dark btn_dislike" data-id="{{ data_id }} {{ type }}" type="{{ data_id }}"><i
-            class="bi-hand-thumbs-down-fill"></i></button>
-    <div class="reputationCounter">
-        <span class="{{ data_id }}_reputation">{{ reputation }}</span>
-    </div>
-    <button class="btn btn-outline-dark btn_like" data-id="{{ data_id }} {{ type }}" type="{{ data_id }}"><i
-            class="bi-hand-thumbs-up-fill"></i></button>
+    {% if user.username %}
+        <button class="btn btn-outline-dark btn_dislike" data-id="{{ data_id }} {{ type }}" type="{{ data_id }}"><i
+                class="bi-hand-thumbs-down-fill"></i></button>
+        <div class="reputationCounter">
+            <span class="{{ data_id }}_reputation">{{ reputation }}</span>
+        </div>
+        <button class="btn btn-outline-dark btn_like" data-id="{{ data_id }} {{ type }}" type="{{ data_id }}"><i
+                class="bi-hand-thumbs-up-fill"></i></button>
+    {% else %}
+        <button class="btn btn-outline-dark btn_dislike" data-id="{{ data_id }} {{ type }}" type="{{ data_id }}" disabled>
+            <i class="bi-hand-thumbs-down-fill"></i></button>
+        <div class="reputationCounter">
+            <span class="{{ data_id }}_reputation">{{ reputation }}</span>
+        </div>
+        <button class="btn btn-outline-dark btn_like" data-id="{{ data_id }} {{ type }}" type="{{ data_id }}" disabled>
+            <i class="bi-hand-thumbs-up-fill"></i></button>
+    {% endif %}
+
 </div>

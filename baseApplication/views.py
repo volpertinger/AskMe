@@ -188,6 +188,7 @@ def index(request, tag: str = '', sort: str = ''):
     posts, page_number = get_posts(request, questions)
 
     user = get_profile(user)
+    print(user)
     return render(request, "index.html",
                   {"questions": questions, "tag": tag, "page": page_number,
                    "posts": posts, "tags": popular_tags, "header": header, "user": user})
