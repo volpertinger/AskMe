@@ -3,7 +3,7 @@
     <div class="col-2 questionLeftColumn">
         <img src="{% static "images/tmp_static/profile_icons/user_02.jpg" %}" alt="tmpUser_01"
              class="questionAvatar">
-        {% include "include/reputation.html" with reputation=question.reputation %}
+        {% include "include/reputation.html" with reputation=question.reputation data_id=question.id type="question" %}
     </div>
     <div class="col-7">
         <h3><p>{{ question.title }}</p></h3>

@@ -3,7 +3,7 @@
     <div class="col-2 questionLeftColumn">
         <img src="{% static "images/tmp_static/profile_icons/user_03.jpg" %}" alt="tmpUser_01"
              class="questionAvatar">
-        {% include "include/reputation.html" with reputation=answer.reputation %}
+        {% include "include/reputation.html" with reputation=answer.reputation data_id=answer.id type="answer" %}
         <div class="form-group form-check correctBox">
             <input type="checkbox" class="form-check-input" id="Correct 1">
             <label class="form-check-label" for="Correct 1">Correct!</label>

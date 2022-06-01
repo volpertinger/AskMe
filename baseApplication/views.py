@@ -98,6 +98,39 @@ def update_settings(user, username, email, password, first_name, last_name, prof
     user.save()
 
 
+def reputation_processing(user, data):
+    data = data.split(' ')
+    if len(data) < 3:
+        return
+    # id вопроса или ответа
+    data_id = data[0]
+    # вопрос или ответ
+    type_id = data[1]
+    # like или dislike
+    reputation_type = data[2]
+
+    if type_id == 'answer':
+        pass
+    elif type_id == 'question':
+        if reputation_type == 'like':
+            like = Question.manager.get_like(data_id)
+            like.authors.add(user)
+            like.save()
+        elif reputation_type == 'dislike':
+            dislike = Question.manager.get_dislike(data_id)
+            dislike.authors.add(user)
+            dislike.save()
+        update_question_reputation(data_id)
+
+
+def update_question_reputation(question_id):
+    question = Question.manager.all().filter(id=question_id)[0]
+    like = Question.manager.get_like(question_id)
+    dislike = Question.manager.get_dislike(question_id)
+    question.reputation = int(like) - int(dislike)
+    question.save()
+
+
 # Views
 
 def index(request, tag: str = '', sort: str = ''):
@@ -167,7 +200,6 @@ def registration(request):
 
     if request.method == "POST":
         form = RegistrationForm(data=request.POST, files=request.FILES)
-        print(request.POST)
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
@@ -230,7 +262,9 @@ def questionAnswer(request, id_question: int):
 @login_required
 @require_POST
 def vote(request):
-    print(request.GET)
-    question_id = request.POST['question_id']
-    print(question_id)
+    print(request.POST)
+    user = request.user
+    user = get_profile(user)
+    full_id = request.POST['data_id']
+    reputation_processing(user, full_id)
     return JsonResponse({'result_code': 0})

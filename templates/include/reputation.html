@@ -1,8 +1,10 @@
 <div class="btn-group reputationBox">
-    <button class="btn btn-outline-dark btn_dislike" data-id="{{ question_id }}"><i
+    {% csrf_token %}
+    <button class="btn btn-outline-dark btn_dislike" data-id="{{ data_id }} {{ type }}"><i
             class="bi-hand-thumbs-down-fill"></i></button>
     <div class="reputationCounter">
         <a>{{ reputation }}</a>
     </div>
-    <button class="btn btn-outline-dark btn_like"><i class="bi-hand-thumbs-up-fill"></i></button>
+    <button class="btn btn-outline-dark btn_like" data-id="{{ data_id }} {{ type }}"><i
+            class="bi-hand-thumbs-up-fill"></i></button>
 </div>

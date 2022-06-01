@@ -31,7 +31,7 @@ urlpatterns = [
     path('questionAnswer/<int:id_question>', views.questionAnswer),
     path('questionsByTag/<str:tag>', views.index),
     path('logout/', views.logout),
-    path('vote/', views.vote, name='vote-view')
+    path('vote/', views.vote),
 ]
 
 if settings.DEBUG:

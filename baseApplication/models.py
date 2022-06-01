@@ -32,6 +32,12 @@ class QuestionManager(models.Manager):
         dislikes = int(self.get_queryset().get(id=self.id).dislike)
         return likes - dislikes
 
+    def get_like(self, id_):
+        return self.get_queryset().get(id=id_).like
+
+    def get_dislike(self, id_):
+        return self.get_queryset().get(id=id_).dislike
+
 
 class AnswerQuerySet(models.QuerySet):
     def popular(self):

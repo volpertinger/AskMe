@@ -1,4 +1,3 @@
-// с сайта djangoproject функция для взятия csrf токена т к у нас login required на view
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -18,22 +17,23 @@ function getCookie(name) {
 const csrftoken = getCookie('csrftoken');
 
 $(".btn_like").on('click', function (ev) {
-    console.log('liked');
     const $this = $(this);
+    console.log('liked');
+    console.log('this id=' + $this.data("id"));
 
     const request = new Request(
-        'http://127.0.0.1:8000/',
+        'http://127.0.0.1:8000/vote/',
         {
             method: 'POST',
             headers: {
                 'X-CSRFToken': csrftoken,
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: 'question_id=' + $this.data('data-id'),
+            body: 'data_id=' + $this.data('id') + ' like'
         }
     )
     fetch(request).then(function (response) {
-        console.log("response");
+        console.log(request);
     })
 })
 
