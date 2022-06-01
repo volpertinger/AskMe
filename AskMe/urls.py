@@ -32,8 +32,9 @@ urlpatterns = [
     path('questionsByTag/<str:tag>', views.index),
     path('logout/', views.logout),
     path('vote/', views.vote),
+    path('correct/', views.make_correct),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns +=  static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

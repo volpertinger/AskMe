@@ -38,6 +38,9 @@ class QuestionManager(models.Manager):
     def get_dislike(self, id_):
         return self.get_queryset().get(id=id_).dislike
 
+    def get_user_questions(self, user):
+        return self.get_queryset().filter(author=user).all()
+
 
 class AnswerQuerySet(models.QuerySet):
     def popular(self):
@@ -69,6 +72,12 @@ class AnswerManager(models.Manager):
 
     def get_dislike(self, id_):
         return self.get_queryset().get(id=id_).dislike
+
+    def get_answer(self, id_):
+        return self.get_queryset().get(id=id_)
+
+    def get_user_answers(self, user):
+        return self.get_queryset().filter(author=user).all()
 
 
 class TagQuerySet(models.QuerySet):

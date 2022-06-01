@@ -5,8 +5,27 @@
              class="questionAvatar">
         {% include "include/reputation.html" with reputation=answer.reputation data_id=answer.id type="answer" %}
         <div class="form-group form-check correctBox">
-            <input type="checkbox" class="form-check-input" id="Correct 1">
-            <label class="form-check-label" for="Correct 1">Correct!</label>
+            {% if answer.isCorrect %}
+                {% if user == answer.author %}
+                    <input type="checkbox" class="form-check-input box_correct " id="Correct"
+                           data-id="{{ answer.id }} {{ question.author }}" checked>
+                    <label class="form-check-label" for="Correct">Correct!</label>
+                {% else %}
+                    <input type="checkbox" class="form-check-input box_correct " id="Correct"
+                           data-id="{{ answer.id }} {{ question.author }}" checked disabled>
+                    <label class="form-check-label" for="Correct">Correct!</label>
+                {% endif %}
+            {% else %}
+                {% if user == answer.author %}
+                    <input type="checkbox" class="form-check-input box_correct " id="Correct"
+                           data-id="{{ answer.id }} {{ question.author }}">
+                    <label class="form-check-label" for="Correct">Correct!</label>
+                {% else %}
+                    <input type="checkbox" class="form-check-input box_correct " id="Correct"
+                           data-id="{{ answer.id }} {{ question.author }}" disabled>
+                    <label class="form-check-label" for="Correct">Correct!</label>
+                {% endif %}
+            {% endif %}
         </div>
     </div>
     <div class="col-7">

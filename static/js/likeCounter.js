@@ -62,3 +62,25 @@ $(".btn_dislike").on('click', function (ev) {
         });
     })
 })
+
+$(".box_correct").on('click', function (ev) {
+    const $this = $(this);
+    console.log($this.data('id'));
+    const request = new Request(
+        'http://127.0.0.1:8000/correct/',
+        {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body:
+                'data_id=' + $this.data('id'),
+        }
+    )
+    fetch(request).then(function (response) {
+        const result = response.json().then(function (parsed) {
+            $this.change();
+        });
+    })
+})

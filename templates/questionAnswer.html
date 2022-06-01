@@ -3,7 +3,7 @@
 {% block content %}
     {% include "include/questionInAnswer.html" %}
     {% for answer in posts %}
-        {% include "include/answer.html" %}
+        {% include "include/answer.html" with main_question=question %}
     {% endfor %}
     {% include "include/pagination.html" with page=posts %}
 

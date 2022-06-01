@@ -118,12 +118,18 @@ def reputation_processing(user, data):
     else:
         return
     if reputation_type == 'like':
-        dislike.authors.remove(user)
-        like.authors.add(user)
+        if like.authors.all().filter(username=user.username):
+            like.authors.remove(user)
+        else:
+            dislike.authors.remove(user)
+            like.authors.add(user)
         like.save()
     elif reputation_type == 'dislike':
-        like.authors.remove(user)
-        dislike.authors.add(user)
+        if dislike.authors.all().filter(username=user.username):
+            dislike.authors.remove(user)
+        else:
+            like.authors.remove(user)
+            dislike.authors.add(user)
         dislike.save()
     if type_id == 'answer':
         return update_answer_reputation(data_id)
@@ -147,6 +153,21 @@ def update_answer_reputation(answer_id):
     answer.reputation = int(like) - int(dislike)
     answer.save()
     return answer.reputation
+
+
+def make_correct_processing(user, data):
+    data = data.split(' ')
+    if len(data) < 2:
+        return False
+    answer_id = data[0]
+    answer = Answer.manager.get_answer(answer_id)
+    question_author = data[1]
+    question_author = Profile.manager.get(username=question_author)
+    if user != question_author:
+        return answer.isCorrect
+    answer.isCorrect = not answer.isCorrect
+    answer.save()
+    return answer.isCorrect
 
 
 # Views
@@ -195,7 +216,6 @@ def logout(request):
 
 def login(request):
     popular_tags = get_popular_tags()
-    user = request.user
 
     if request.method == "POST":
         form = LoginForm(data=request.POST)
@@ -209,6 +229,7 @@ def login(request):
     else:
         form = LoginForm()
 
+    user = request.user
     user = get_profile(user)
     return render(request, "login.html", {"tags": popular_tags, "form": form, "user": user})
 
@@ -280,9 +301,18 @@ def questionAnswer(request, id_question: int):
 @login_required
 @require_POST
 def vote(request):
-    print(request.POST)
     user = request.user
     user = get_profile(user)
     full_id = request.POST['data_id']
     new_reputation = reputation_processing(user, full_id)
     return JsonResponse({'new_reputation': new_reputation})
+
+
+@login_required
+@require_POST
+def make_correct(request):
+    user = request.user
+    user = get_profile(user)
+    full_id = request.POST['data_id']
+    new_correct = make_correct_processing(user, full_id)
+    return JsonResponse({'new_correct': new_correct})
