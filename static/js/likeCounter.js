@@ -38,5 +38,22 @@ $(".btn_like").on('click', function (ev) {
 })
 
 $(".btn_dislike").on('click', function (ev) {
+    const $this = $(this);
     console.log('disliked');
+    console.log('this id=' + $this.data("id"));
+
+    const request = new Request(
+        'http://127.0.0.1:8000/vote/',
+        {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'data_id=' + $this.data('id') + ' dislike'
+        }
+    )
+    fetch(request).then(function (response) {
+        console.log(request);
+    })
 })

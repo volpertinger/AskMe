@@ -110,14 +110,23 @@ def reputation_processing(user, data):
     reputation_type = data[2]
 
     if type_id == 'answer':
-        pass
-    elif type_id == 'question':
         if reputation_type == 'like':
-            like = Question.manager.get_like(data_id)
+            like = Answer.manager.get_like(data_id)
             like.authors.add(user)
             like.save()
         elif reputation_type == 'dislike':
-            dislike = Question.manager.get_dislike(data_id)
+            dislike = Answer.manager.get_dislike(data_id)
+            dislike.authors.add(user)
+            dislike.save()
+    elif type_id == 'question':
+        like = Question.manager.get_like(data_id)
+        dislike = Question.manager.get_dislike(data_id)
+        if reputation_type == 'like':
+            dislike.authors.remove(user)
+            like.authors.add(user)
+            like.save()
+        elif reputation_type == 'dislike':
+            like.authors.remove(user)
             dislike.authors.add(user)
             dislike.save()
         update_question_reputation(data_id)
@@ -129,6 +138,14 @@ def update_question_reputation(question_id):
     dislike = Question.manager.get_dislike(question_id)
     question.reputation = int(like) - int(dislike)
     question.save()
+
+
+def update_answer_reputation(answer_id):
+    answer = Answer.manager.all().filter(id=answer_id)[0]
+    like = Answer.manager.get_like(answer_id)
+    dislike = Answer.manager.get_dislike(answer_id)
+    answer.reputation = int(like) - int(dislike)
+    answer.save()
 
 
 # Views
