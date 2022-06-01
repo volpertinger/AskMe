@@ -1,6 +1,12 @@
 {% extends "include/base.html" %}
 {% block content %}
-    <h2 class="mt-5">New questions</h2>
+    {% if tag != "" %}
+        <h2 class="mt-5">Tag: {{ tag }} ({{ tag.get_count_questions }})</h2>
+    {% else %}
+        <h2 class="mt-5">{{ header }}</h2>
+    {% endif %}
+    <a href="/questionsSort/latest" class="btn btn-info buttonNavBar" role="button">all latest questions</a>
+    <a href="/" class="btn btn-info buttonNavBar" role="button">all popular questions</a>
     {% for question in posts %}
         {% include "include/question.html" %}
     {% endfor %}

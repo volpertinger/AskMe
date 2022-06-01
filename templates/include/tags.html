@@ -1,16 +1,7 @@
 {% load static %}
-<div id="popular tags" class="popularTags">
+<div id="popular tags">
     <h2 class="mt-5"> Popular Tags</h2>
-    <a href="/questionsByTag/perl">perl</a>
-    <a href="/questionsByTag/Python">Python</a>
-    <a href="/questionsByTag/MySQL">MySQL</a>
-    <a href="/questionsByTag/Tech">Tech</a>
-    <a href="/questionsByTag/django">django</a>
-    <a href="/questionsByTag/C++">C++</a>
-    <a href="/questionsByTag/C">C</a>
-    <a href="/questionsByTag/Moon">Moon</a>
-    <a href="/questionsByTag/anotherTag">anotherTag</a>
-    <a href="/questionsByTag/IDE">IDE</a>
-    <a href="/questionsByTag/Mars">Mars</a>
-    <a href="/questionsByTag/Universe">Universe</a>
+    {% for tag in tags %}
+        <div class="popularTags"><a href="/questionsByTag/{{ tag }}">{{ tag }}</a></div>
+    {% endfor %}
 </div>

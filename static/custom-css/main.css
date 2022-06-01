@@ -9,7 +9,7 @@ main > .container {
     padding: 10px;
 }
 
-.questionLeftColumn{
+.questionLeftColumn {
     height: 100%;
 }
 
@@ -71,7 +71,7 @@ main > .container {
     padding: 2px;
 }
 
-.reputationBox{
+.reputationBox {
     height: 25%;
     width: 100%;
     align-content: center;
@@ -109,4 +109,10 @@ main > .container {
     border-top: 2px solid gray;
     margin: 20px;
     padding: 10px;
+}
+
+.currentImage {
+    padding: 10px;
+    width: 200px;
+    border-radius: 40px;
 }
