@@ -1,82 +1,319 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.contrib import auth
+from django.contrib.auth.decorators import login_required
+from django.forms import model_to_dict
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.urls import reverse
+from django.views.decorators.http import require_POST
 
-# Create your views here.
-
-QUESTIONS = [
-    {
-        "title": f"Title {i}",
-        "text": f"some text for question #{i}",
-        "number": f"{i}",
-        "reputation": f"{i * 123 + 32}"
-    } for i in range(22)
-]
-
-ANSWERS = [
-    {
-        "text": f"some text in answer #{i}",
-        "reputation": f"{i * 107 - 54}"
-    } for i in range(22)
-]
+from baseApplication.models import Profile, Like, Dislike, Question, Answer, Tag
+from django.http import Http404
+from .forms import LoginForm, RegistrationForm, AnswerForm, QuestionForm, SettingsForm
 
 
-def index(request):
-    page = request.GET.get('page')
-    paginator = Paginator(QUESTIONS, 5)
+# helping functions
+
+def get_posts(request, array):
+    page_number = request.GET.get('page')
+    paginator = Paginator(array, 5)
     try:
-        posts = paginator.page(page)
+        posts = paginator.page(page_number)
     except PageNotAnInteger:
         # Если страница не является целым числом, поставим первую страницу
         posts = paginator.page(1)
     except EmptyPage:
         # Если страница больше максимальной, доставить последнюю страницу результатов
         posts = paginator.page(paginator.num_pages)
-    return render(request, "index.html", {"questions": QUESTIONS, "isMember": True, "page": page,
-                                          "posts": posts})
+    return posts, page_number
 
 
+def get_last_posts(request, array):
+    page_number = request.GET.get('page')
+    paginator = Paginator(array, 5)
+    posts = paginator.page(paginator.num_pages)
+    return posts, page_number
+
+
+def get_profile(user):
+    profile = Profile.manager.get_user(user)
+    if len(profile) < 1:
+        return user
+    return profile[0]
+
+
+def save_question(user, title, text, tags):
+    like = Like()
+    like.save()
+    dislike = Dislike()
+    dislike.save()
+    reputation = 0
+    question = Question(title=title, text=text, like=like, dislike=dislike, author=user, reputation=reputation)
+    question.save()
+
+    tags = tags.split(' ')
+    for title in tags:
+        tag = Tag.manager.get_tag_by_title(title)
+        if tag is not None:
+            tag.questions.add(question)
+            continue
+        tag = Tag(title=title)
+        tag.save()
+        tag.questions.add(question)
+
+    return question
+
+
+def save_answer(text, user, question):
+    like = Like()
+    like.save()
+    dislike = Dislike()
+    dislike.save()
+    reputation = 0
+    answer = Answer(text=text, question=question, like=like, dislike=dislike, author=user,
+                    reputation=reputation)
+    answer.save()
+
+
+def get_popular_tags(number=10):
+    tags = Tag.manager.get_popular()
+    if len(tags) <= number:
+        return tags
+    return tags[:number]
+
+
+def update_settings(user, username, email, password, first_name, last_name, profile_image):
+    if username:
+        user.username = username
+    if email:
+        user.email = email
+    if password:
+        user.set_password(password)
+    if first_name:
+        user.first_name = first_name
+    if last_name:
+        user.last_name = last_name
+    if profile_image:
+        user.profile_image = profile_image
+    user.save()
+
+
+def reputation_processing(user, data):
+    data = data.split(' ')
+    if len(data) < 3:
+        return
+    # id вопроса или ответа
+    data_id = data[0]
+    # вопрос или ответ
+    type_id = data[1]
+    # like или dislike
+    reputation_type = data[2]
+
+    if type_id == 'answer':
+        like = Answer.manager.get_like(data_id)
+        dislike = Answer.manager.get_dislike(data_id)
+    elif type_id == 'question':
+        like = Question.manager.get_like(data_id)
+        dislike = Question.manager.get_dislike(data_id)
+    else:
+        return
+    if reputation_type == 'like':
+        if like.authors.all().filter(username=user.username):
+            like.authors.remove(user)
+        else:
+            dislike.authors.remove(user)
+            like.authors.add(user)
+        like.save()
+    elif reputation_type == 'dislike':
+        if dislike.authors.all().filter(username=user.username):
+            dislike.authors.remove(user)
+        else:
+            like.authors.remove(user)
+            dislike.authors.add(user)
+        dislike.save()
+    if type_id == 'answer':
+        return update_answer_reputation(data_id)
+    else:
+        return update_question_reputation(data_id)
+
+
+def update_question_reputation(question_id):
+    question = Question.manager.all().filter(id=question_id)[0]
+    like = Question.manager.get_like(question_id)
+    dislike = Question.manager.get_dislike(question_id)
+    question.reputation = int(like) - int(dislike)
+    question.save()
+    return question.reputation
+
+
+def update_answer_reputation(answer_id):
+    answer = Answer.manager.all().filter(id=answer_id)[0]
+    like = Answer.manager.get_like(answer_id)
+    dislike = Answer.manager.get_dislike(answer_id)
+    answer.reputation = int(like) - int(dislike)
+    answer.save()
+    return answer.reputation
+
+
+def make_correct_processing(user, data):
+    data = data.split(' ')
+    if len(data) < 2:
+        return False
+    answer_id = data[0]
+    answer = Answer.manager.get_answer(answer_id)
+    question_author = data[1]
+    question_author = Profile.manager.get(username=question_author)
+    if user != question_author:
+        return answer.isCorrect
+    answer.isCorrect = not answer.isCorrect
+    answer.save()
+    return answer.isCorrect
+
+
+# Views
+
+def index(request, tag: str = '', sort: str = ''):
+    header = "popular questions"
+    popular_tags = get_popular_tags()
+    questions = Question.manager.get_popular()
+    user = request.user
+    if sort == "latest":
+        header = "latest questions"
+        questions = Question.manager.get_latest()
+    if tag != '':
+        tag = Tag.manager.get_tag_by_title(tag)
+        questions = Question.manager.get_by_tag(tag)
+        if len(questions) <= 0:
+            raise Http404("Tag does not exist")
+    posts, page_number = get_posts(request, questions)
+
+    user = get_profile(user)
+    print(user)
+    return render(request, "index.html",
+                  {"questions": questions, "tag": tag, "page": page_number,
+                   "posts": posts, "tags": popular_tags, "header": header, "user": user})
+
+
+@login_required
 def addQuestion(request):
-    return render(request, "addQuestion.html", {"isMember": True})
+    popular_tags = get_popular_tags()
+    user = request.user
+    user = get_profile(user)
+    if request.method == "POST":
+        form = QuestionForm(data=request.POST)
+        if form.is_valid():
+            question = save_question(user, form.clean_title(), form.clean_text(), form.clean_tags())
+            redirect_url = '/questionAnswer/' + str(question.id)
+            return redirect(redirect_url)
+    else:
+        form = QuestionForm()
+    return render(request, "addQuestion.html", {"user": user, "tags": popular_tags, "form": form})
+
+
+def logout(request):
+    auth.logout(request)
+    return redirect('/')
 
 
 def login(request):
-    return render(request, "login.html", {"isMember": False})
+    popular_tags = get_popular_tags()
+
+    if request.method == "POST":
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            user = auth.authenticate(request, **form.cleaned_data)
+            if user:
+                auth.login(request, user)
+                return redirect('/')
+            else:
+                form.add_error("password", "Invalid username or password")
+    else:
+        form = LoginForm()
+
+    user = request.user
+    user = get_profile(user)
+    return render(request, "login.html", {"tags": popular_tags, "form": form, "user": user})
 
 
 def registration(request):
-    return render(request, "registration.html", {"isMember": False})
+    popular_tags = get_popular_tags()
+
+    if request.method == "POST":
+        form = RegistrationForm(data=request.POST, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password')
+            auth.authenticate(username=username, password=raw_password)
+            return redirect('/login/')
+
+    else:
+        form = RegistrationForm()
+    return render(request, "registration.html", {"tags": popular_tags, "form": form})
 
 
+@login_required
 def settings(request):
-    return render(request, "settings.html", {"isMember": True})
+    popular_tags = get_popular_tags()
+    user = request.user
+    user = get_profile(user)
+
+    if request.method == "POST":
+        form = SettingsForm(initial=request.POST, files=request.FILES)
+        if form.is_valid():
+            update_settings(user, form.clean_username(), form.clean_email(), form.clean_password(),
+                            form.clean_first_name(), form.clean_last_name(), form.clean_profile_image())
+    else:
+        initial_data = model_to_dict(user)
+        initial_data["profile_image"] = user.profile_image
+        form = SettingsForm(initial=initial_data)
+
+    return render(request, "settings.html", {"user": user, "tags": popular_tags, "form": form})
 
 
-def questionAnswer(request, i: int):
-    page = request.GET.get('page')
-    paginator = Paginator(ANSWERS, 5)
-    try:
-        posts = paginator.page(page)
-    except PageNotAnInteger:
-        # Если страница не является целым числом, поставим первую страницу
-        posts = paginator.page(1)
-    except EmptyPage:
-        # Если страница больше максимальной, доставить последнюю страницу результатов
-        posts = paginator.page(paginator.num_pages)
+def questionAnswer(request, id_question: int):
+    popular_tags = get_popular_tags()
+    user = request.user
+
+    question = Question.manager.all().filter(id=id_question)
+    if len(question) <= 0:
+        raise Http404("Question does not exist")
+    question = question[0]
+    answers = Answer.manager.get_popular(question)
+    posts, page_number = get_posts(request, answers)
+
+    user = get_profile(user)
+
+    if request.method == "POST":
+        form = AnswerForm(data=request.POST)
+        if form.is_valid():
+            save_answer(form.clean_text(), user, question)
+            # получаем новую пагинацию ответов
+            answers = Answer.manager.get_popular(question)
+            posts, page_number = get_last_posts(request, answers)
+    else:
+        form = AnswerForm()
+
     return render(request, "questionAnswer.html",
-                  {"question": QUESTIONS[i], "answers": ANSWERS, "isMember": True, "page": page, "posts": posts})
+                  {"question": question, "answers": answers, "page": page_number, "posts": posts,
+                   "tags": popular_tags, "user": user, "form": form})
 
 
-def questionsByTag(request, tag: str):
-    page = request.GET.get('page')
-    paginator = Paginator(QUESTIONS, 5)
-    try:
-        posts = paginator.page(page)
-    except PageNotAnInteger:
-        # Если страница не является целым числом, поставим первую страницу
-        posts = paginator.page(1)
-    except EmptyPage:
-        # Если страница больше максимальной, доставить последнюю страницу результатов
-        posts = paginator.page(paginator.num_pages)
-    return render(request, "questionsTag.html", {"questions": QUESTIONS, "isMember": True, "tag": tag, "page": page,
-                                                 "posts": posts})
+@login_required
+@require_POST
+def vote(request):
+    user = request.user
+    user = get_profile(user)
+    full_id = request.POST['data_id']
+    new_reputation = reputation_processing(user, full_id)
+    return JsonResponse({'new_reputation': new_reputation})
+
+
+@login_required
+@require_POST
+def make_correct(request):
+    user = request.user
+    user = get_profile(user)
+    full_id = request.POST['data_id']
+    new_correct = make_correct_processing(user, full_id)
+    return JsonResponse({'new_correct': new_correct})

@@ -17,13 +17,24 @@ from django.contrib import admin
 from django.urls import path
 from baseApplication import views
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
+    path('questionsSort/<str:sort>', views.index),
     path('addQuestion/', views.addQuestion),
     path('login/', views.login),
     path('settings/', views.settings),
     path('registration/', views.registration),
-    path('questionAnswer/<int:i>', views.questionAnswer),
-    path('questionsByTag/<str:tag>', views.questionsByTag)
+    path('questionAnswer/<int:id_question>', views.questionAnswer),
+    path('questionsByTag/<str:tag>', views.index),
+    path('logout/', views.logout),
+    path('vote/', views.vote),
+    path('correct/', views.make_correct),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
